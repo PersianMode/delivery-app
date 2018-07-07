@@ -1,0 +1,17 @@
+<ion-content padding>
+  <div class="title">
+    <ion-label>سیستم ارسال کالا پرشین مد</ion-label>
+  </div>
+  <div class="title">
+    <ion-label>صفحه ورود</ion-label>
+  </div>
+  <ion-list class="login-area">
+    <ion-item>
+      <ion-input class="login-input" type="text" placeholder="نام کاربری" [(ngModel)]="username"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input class="login-input" type="password" placeholder="رمز عبور" [(ngModel)]="password"></ion-input>
+    </ion-item>
+  </ion-list>
+  <button ion-button color="dark" full (click)="login()">ورود</button>
+</ion-content>

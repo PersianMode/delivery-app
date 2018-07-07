@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>در حال ارسال</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-icon (click)="getDeliveryItems()" name="refresh"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-list class="delivery-list">
+    <ion-item-sliding *ngFor="let del of deliveryItems">
+      <ion-item (tap)="deliveryDetails(del)">
+        <div>
+          <h2>منطقه: {{getDistrict(del)}}</h2>
+          <h3>خیابان: {{getStreet(del)}}</h3>
+          <p>تحویل گیرنده: {{getReceiverName(del)}}</p>
+        </div>
+      </ion-item>
+
+      <ion-item-options side="right">
+        <button class="slide-button" ion-button color="secondary" (click)="setEvidence(del)">
+          <ion-icon name="attach"></ion-icon>
+        </button>
+        <button class="slide-button" ion-button color="danger" (click)="callReceiver(del)">
+          <ion-icon name="call"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>

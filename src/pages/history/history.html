@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>ارسال شده ها</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-icon (click)="getDeliveredItems()" name="refresh"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-list class="delivery-list">
+    <ion-item *ngFor="let del of deliveredItems" (tap)="viewDetails(del)">
+      <div class="inner-item">
+        <h2>منطقه: {{getDistrict(del)}}</h2>
+        <h3>خیابان: {{getStreet(del)}}</h3>
+        <p>تحویل گیرنده: {{getReceiverName(del)}}</p>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>پروفایل</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="list card">
+    <ion-item class="profile-item">
+      <div class="profile-picture big-profile-picture">
+        <img src="{{user.imgUrl}}">
+      </div>
+      <div class="profile-name dark">{{user.fullName}}</div>
+      <button ion-button full color="light" class="edit-profile-button">
+        ویرایش پروفایل
+      </button>
+    </ion-item>
+  </div>
+  <div>
+    <ion-row>
+      <ion-col>
+        <button full color="dark" class="logout-btn" ion-button (click)="logout()">خروج</button>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

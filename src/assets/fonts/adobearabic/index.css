@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'adobe';
+  font-style: normal;
+  font-weight: normal;
+  src: url('AdobeArabicRegular.otf');
+  unicode-range: U+0600-06FF;
+}
+
+@font-face {
+  font-family: 'adobe';
+  src: url('AdobeArabicBold.otf');
+  font-style: normal;
+  font-weight: bold;
+  unicode-range: U+0600-06FF;
+}
+
+@font-face {
+  font-family: 'adobe';
+  src: url('AdobeArabicItalic.otf');
+  font-style: italic;
+  font-weight: normal;
+  unicode-range: U+0600-06FF;
+}
+
+@font-face {
+  font-family: 'adobe';
+  src: url('AdobeArabicBolditalic.otf');
+  font-weight: bold;
+  font-style: italic;
+  unicode-range: U+0600-06FF;
+}
