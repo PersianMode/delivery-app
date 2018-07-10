@@ -24,7 +24,10 @@
       </ion-item>
 
       <ion-item-options side="right">
-        <button class="slide-button" ion-button color="secondary" (click)="setEvidence(del)">
+        <button class="slide-button" ion-button color="primary" (click)="finishDelivery(del)" *ngIf="!del.delivery_end">
+          <ion-icon name="checkmark"></ion-icon>
+        </button>
+        <button class="slide-button" ion-button color="secondary" (click)="setEvidence(del)" *ngIf="del.delivery_end">
           <ion-icon name="attach"></ion-icon>
         </button>
         <button class="slide-button" ion-button color="danger" (click)="callReceiver(del)">

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {NavController, LoadingController, ToastController} from 'ionic-angular';
+import {NavController, LoadingController, ToastController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
@@ -15,7 +15,7 @@ export class OnDeliveryPage implements OnInit {
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private loadingCtrl: LoadingController, private toastCtrl: ToastController,
-    private callNumber: CallNumber) {
+    private callNumber: CallNumber, private alertCtrl: AlertController) {
   }
 
   ngOnInit() {
@@ -30,8 +30,7 @@ export class OnDeliveryPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/agent/items', {
-      delivery_status: DELIVERY_STATUS.OnDelivery,
-      is_delivered: false,
+      delivery_status_list: [DELIVERY_STATUS.OnDelivery, DELIVERY_STATUS.Delivered],
     }).subscribe(
       data => {
         this.deliveryItems = data;
@@ -103,5 +102,51 @@ export class OnDeliveryPage implements OnInit {
         duration: 2000,
       }).present();
     }
+  }
+
+  finishDelivery(item) {
+    if (item.delivery_end) {
+      this.toastCtrl.create({
+        message: 'مرسوله مورد نظر پیشتر به پایان رسیده بود.',
+        duration: 2000,
+      }).present();
+
+      this.deliveryItems = this.deliveryItems.filter(el => el._id !== item._id);
+      return;
+    }
+
+    this.alertCtrl.create({
+      title: 'تأیید ارسال',
+      message: 'آیا ارسال این مرسوله به پایان رسیده است؟',
+      buttons: [
+        {
+          text: 'لغو',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'بله',
+          handler: () => {
+            this.httpService.post('delivery/finish', {
+              _id: item._id,
+            }).subscribe(
+              data => {
+                item.delivery_end = new Date();
+                this.toastCtrl.create({
+                  message: 'ارسال به پایان رسید',
+                  duration: 1200,
+                }).present();
+              },
+              err => {
+                this.toastCtrl.create({
+                  message: 'به اتمام رساندن مرسوله به مشکل با خطا مواجه شد. شاید این مرسوله پیشتر به اتمام رسیده باشد',
+                  duration: 2000,
+                }).present();
+              });
+          }
+        }
+      ]
+    }).present();
   }
 }

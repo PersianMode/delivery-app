@@ -57,6 +57,7 @@ export class DeliveredEvidencePage implements OnInit {
           },
           params: {
             '_id': this.deliveryDetails._id,
+            'customer_id': this.deliveryDetails.to.customer.customer_id || this.deliveryDetails.from.customer.customer_id,
           }
         };
 
