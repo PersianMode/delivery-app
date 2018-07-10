@@ -1,5 +1,5 @@
 export enum DELIVERY_STATUS {
-  DeliverySet = 10,
-  OnDelivery = 11,
-  Delivered = 12,
+  DeliverySet = 8,
+  OnDelivery = 9,
+  Delivered = 10,
 };
