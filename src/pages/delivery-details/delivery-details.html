@@ -5,6 +5,16 @@
 </ion-header>
 
 <ion-content padding style="direction: rtl">
+  <ion-grid *ngIf="shouldGetEvidence">
+    <ion-row>
+      <ion-col>
+        <button ion-button block (click)="takePhoto()">
+          گرفتن تصویر
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
   <ion-list>
     <ion-list-header>اطلاعات عمومی</ion-list-header>
     <ion-item>
@@ -46,8 +56,8 @@
     </ion-item>
   </ion-list>
 
-  <div *ngIf="isDelivered">
-    <img [src]="getEvidenceImage()"/>
+  <div *ngIf="isDelivered && !shouldGetEvidence && deliveryDetails.to.customer._id">
+    <img [src]="getEvidenceImage()" />
   </div>
 
   <ion-list>

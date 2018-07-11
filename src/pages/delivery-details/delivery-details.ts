@@ -1,7 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {NavController, Navbar, NavParams} from 'ionic-angular';
+import {NavController, Navbar, NavParams, ToastController, LoadingController} from 'ionic-angular';
 import * as moment from 'moment';
 import {HttpService} from '../../services/http.service';
+import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
+import {Camera} from '@ionic-native/camera';
 
 @Component({
   selector: 'page-delivery-details',
@@ -11,6 +13,7 @@ export class DeliveryDetailsPage implements OnInit {
   @ViewChild(Navbar) navBar: Navbar;
   deliveryDetails = null;
   isDelivered = false;
+  shouldGetEvidence = false;
   address_parts = [
     {
       name: 'province',
@@ -38,13 +41,21 @@ export class DeliveryDetailsPage implements OnInit {
     },
   ]
 
-  constructor(public navCtrl: NavController, private navParams: NavParams) {
+  constructor(public navCtrl: NavController, private navParams: NavParams,
+    private camera: Camera, private transfer: FileTransfer,
+    private toastCtrl: ToastController, private loadingCtrl: LoadingController,
+    private httpService: HttpService) {
   }
 
   ngOnInit() {
     this.navBar.setBackButtonText("بازگشت");
     this.deliveryDetails = this.navParams.data.delivery;
     this.isDelivered = this.navParams.data.is_delivered || false;
+    this.shouldGetEvidence = this.navParams.data.get_evidence || false;
+
+    console.log(this.deliveryDetails);
+    console.log(this.deliveryDetails.to.customer._id || this.deliveryDetails.from.customer._id);
+    
   }
 
   getAddressPart(direction, part) {
@@ -90,5 +101,63 @@ export class DeliveryDetailsPage implements OnInit {
 
   getEvidenceImage() {
     return HttpService.Host + this.deliveryDetails.delivered_evidence;
+  }
+
+  takePhoto(st) {
+    if (!this.shouldGetEvidence)
+      return;
+
+    var options = {
+      quality: 50,
+      sourceType: st ? st : this.camera.PictureSourceType.CAMERA,
+      saveToPhotoAlbum: false,
+      correctOrientation: true,
+      encodingType: this.camera.EncodingType.JPEG,
+      destinationType: this.camera.DestinationType.FILE_URI
+    };
+
+    this.camera.getPicture(options)
+      .then(imageData => {
+        const fileTransfer: FileTransferObject = this.transfer.create();
+
+        let options: FileUploadOptions = {
+          fileKey: 'file',
+          fileName: 'delivered-evidence.jpeg',
+          chunkedMode: false,
+          mimeType: "image/jpeg",
+          headers: {
+            'token': this.httpService.userToken
+          },
+          params: {
+            '_id': this.deliveryDetails._id,
+            'customer_id': this.deliveryDetails.to.customer._id || this.deliveryDetails.from.customer._id,
+          }
+        };
+
+        const waiting = this.loadingCtrl.create({
+          content: 'در حال بارگذاری تصویر. لطفا صبر کنید ...',
+        });
+
+        waiting.present();
+
+        fileTransfer.upload(imageData, HttpService.Host + '/api/delivery/evidence', options)
+          .then((data) => {
+            waiting.dismiss();
+            this.toastCtrl.create({
+              message: 'تصویر بارگذاری شد',
+              duration: 1200,
+            }).present();
+          })
+          .catch(err => {
+            waiting.dismiss();
+            this.toastCtrl.create({
+              message: 'بارگذاری تصویر به خطا برخورد. دوباره تلاش کنید.',
+              duration: 2000,
+            }).present();
+          });
+      })
+      .catch(err => {
+        console.error('Error: ', err);
+      });
   }
 }

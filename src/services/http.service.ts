@@ -7,8 +7,8 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 export class HttpService {
   public static Host = 'http://bankofstyle.com';
   serverAddress: string = 'http://bankofstyle.com/api/';
-  // public static Host = 'http://192.168.8.148:3000';
-  // serverAddress: string = 'http://192.168.8.148:3000/api/';
+  // public static Host = 'http://localhost:3000';
+  // serverAddress: string = 'http://localhost:3000/api/';
 
   userToken = null;
 

@@ -4,6 +4,7 @@ import {InboxPage} from '../inbox/inbox';
 import {HistoryPage} from '../history/history';
 import {ProfilePage} from '../profile/profile';
 import {OnDeliveryPage} from '../on-delivery/on-delivery';
+import { NotCompleteDeliveryPage } from '../not-complete-delivery/not-complete-delivery';
 
 @Component({
   selector: 'page-tabs',
@@ -14,6 +15,7 @@ export class TabsPage {
   historyPage = HistoryPage;
   profilePage = ProfilePage;
   onDeliveryPage = OnDeliveryPage;
+  notCompletePage = NotCompleteDeliveryPage;
 
   constructor(public navCtrl: NavController) {
   }

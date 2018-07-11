@@ -3,7 +3,6 @@ import {NavController, LoadingController, ToastController, AlertController} from
 import {HttpService} from '../../services/http.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
-import {DeliveredEvidencePage} from '../delivered-evidence/delivered-evidence';
 import {CallNumber} from '@ionic-native/call-number';
 
 @Component({
@@ -30,7 +29,8 @@ export class OnDeliveryPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/agent/items', {
-      delivery_status_list: [DELIVERY_STATUS.OnDelivery, DELIVERY_STATUS.Delivered],
+      delivery_status: DELIVERY_STATUS.OnDelivery,
+      is_delivered: false,
     }).subscribe(
       data => {
         this.deliveryItems = data;
@@ -69,13 +69,6 @@ export class OnDeliveryPage implements OnInit {
   deliveryDetails(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
-    });
-  }
-
-  setEvidence(item) {
-    this.navCtrl.push(DeliveredEvidencePage, {
-      delivery: item,
-      is_delivered: false,
     });
   }
 

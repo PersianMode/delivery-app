@@ -31,7 +31,7 @@ export class InboxPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/agent/items', {
-      delivery_status_list: [DELIVERY_STATUS.DeliverySet],
+      delivery_status: DELIVERY_STATUS.DeliverySet,
       is_delivered: false,
     }).subscribe(
       data => {

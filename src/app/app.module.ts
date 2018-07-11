@@ -17,11 +17,11 @@ import {HistoryPage} from '../pages/history/history';
 import {ProfilePage} from '../pages/profile/profile';
 import {OnDeliveryPage} from '../pages/on-delivery/on-delivery';
 import {DeliveryDetailsPage} from '../pages/delivery-details/delivery-details';
-import {DeliveredEvidencePage} from '../pages/delivered-evidence/delivered-evidence';
 import {Camera} from '@ionic-native/camera';
 import {File} from '@ionic-native/file';
 import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native/file-transfer';
 import {CallNumber} from '@ionic-native/call-number';
+import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-complete-delivery';
 
 @NgModule({
   declarations: [
@@ -33,7 +33,7 @@ import {CallNumber} from '@ionic-native/call-number';
     ProfilePage,
     OnDeliveryPage,
     DeliveryDetailsPage,
-    DeliveredEvidencePage,
+    NotCompleteDeliveryPage,
   ],
   imports: [
     BrowserModule,
@@ -52,7 +52,7 @@ import {CallNumber} from '@ionic-native/call-number';
     ProfilePage,
     OnDeliveryPage,
     DeliveryDetailsPage,
-    DeliveredEvidencePage,
+    NotCompleteDeliveryPage,
   ],
   providers: [
     StatusBar,

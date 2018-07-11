@@ -1,27 +1,27 @@
-import {Component, OnInit} from '@angular/core';
-import {NavController, ToastController, LoadingController} from 'ionic-angular';
+import { Component, OnInit } from '@angular/core';
+import { NavController, LoadingController, ToastController } from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
 
 @Component({
-  selector: 'page-history',
-  templateUrl: 'history.html',
+  selector: 'page-not-complete-delivery',
+  templateUrl: 'not-complete-delivery.html',
 })
-export class HistoryPage implements OnInit {
-  deliveredItems = [];
+export class NotCompleteDeliveryPage implements OnInit{
+  deliveryItems = [];
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
   }
 
   ngOnInit() {
-    this.getDeliveredItems();
+    this.getDeliveryItems();
   }
 
-  getDeliveredItems() {
+  getDeliveryItems() {
     const loading = this.loadingCtrl.create({
-      content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'
+      content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...',
     });
 
     loading.present();
@@ -29,18 +29,18 @@ export class HistoryPage implements OnInit {
     this.httpService.post('delivery/agent/items', {
       delivery_status: DELIVERY_STATUS.Delivered,
       is_delivered: true,
-      is_processed: true,      
+      is_processed: false,
     }).subscribe(
       data => {
-        this.deliveredItems = data;
+        this.deliveryItems = data;
         loading.dismiss();
       },
       err => {
-        console.error('Cannot fetch delivery items as on delivery items: ', err);
+        console.error('Cannot fetch delivery items as delivered without evidence: ', err);
         loading.dismiss();
 
         this.toastCtrl.create({
-          message: 'قادر به دریافت لیست موارد در حال ارسال نیستیم. دوباره تلاش کنید',
+          message: 'قادر به دریافت لیست مرسولات بدون مدرک نیستیم. دوباره تلاش کنید',
           duration: 3200,
         }).present();
       });
@@ -65,10 +65,11 @@ export class HistoryPage implements OnInit {
     return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
   }
 
-  viewDetails(item) {
+  deliveryDetails(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
       is_delivered: true,
+      get_evidence: true,
     });
   }
 }
