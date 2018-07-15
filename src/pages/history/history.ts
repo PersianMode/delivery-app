@@ -16,6 +16,9 @@ export class HistoryPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ionViewDidEnter() {
     this.getDeliveredItems();
   }
 

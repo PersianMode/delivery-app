@@ -16,6 +16,9 @@ export class NotCompleteDeliveryPage implements OnInit{
   }
 
   ngOnInit() {
+  }
+
+  ionViewDidEnter() {
     this.getDeliveryItems();
   }
 

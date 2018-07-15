@@ -18,9 +18,12 @@ export class OnDeliveryPage implements OnInit {
   }
 
   ngOnInit() {
-    this.getDeliveryItems();
   }
 
+  ionViewDidEnter() {
+    this.getDeliveryItems();
+  }
+  
   getDeliveryItems() {
     const loading = this.loadingCtrl.create({
       content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'
@@ -125,6 +128,7 @@ export class OnDeliveryPage implements OnInit {
               _id: item._id,
             }).subscribe(
               data => {
+                this.deliveryItems = this.deliveryItems.filter(el => el._id !== item._id);
                 item.delivery_end = new Date();
                 this.toastCtrl.create({
                   message: 'ارسال به پایان رسید',

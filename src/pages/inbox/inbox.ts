@@ -20,6 +20,9 @@ export class InboxPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ionViewDidEnter() {
     this.getDeliveryItems();
   }
 
