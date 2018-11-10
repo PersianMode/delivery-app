@@ -77,7 +77,7 @@ export class InboxPage implements OnInit {
   }
 
   getDistrict(item) {
-    const district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : item.to.warehouse.address.disctrict;
+    const district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : item.to.warehouse.address.district;
     return district ? district : '-';
   }
 
