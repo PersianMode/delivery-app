@@ -21,6 +21,11 @@ export class UnassignedDeliveriesPage {
     this.getUnassignedDeliveries();
   }
 
+  ionViewDidLeave() {
+    this.selectedList = [];
+    this.isSelectMode = false;
+  }
+
   getUnassignedDeliveries() {
     const loading = this.loadingCtrl.create({
       content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'

@@ -26,6 +26,11 @@ export class InboxPage implements OnInit {
     this.getDeliveryItems();
   }
 
+  ionViewDidLeave() {
+    this.selectedList = [];
+    this.isSelectMode = false;
+  }
+
   getDeliveryItems() {
     const loading = this.loadingCtrl.create({
       content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'
@@ -107,6 +112,12 @@ export class InboxPage implements OnInit {
     if (!this.selectedList.length)
       return;
 
+    const loading = this.loadingCtrl.create({
+      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+    });
+
+    loading.present();
+
     this.httpService.post('delivery/status', {
       delivery_ids: this.selectedList,
       target_status: DELIVERY_STATUS.OnDelivery,
@@ -115,6 +126,7 @@ export class InboxPage implements OnInit {
         this.deliveryItems = this.deliveryItems.filter(el => !this.selectedList.includes(el._id));
         this.selectedList = [];
 
+        loading.dismiss();
         this.toastCtrl.create({
           message: 'موارد انتخاب شده با موفقیت قبول شدند.',
           duration: 2300,
@@ -126,6 +138,7 @@ export class InboxPage implements OnInit {
           message: 'قبول موارد انتخاب شده با مشکل مواجه شد. دوباره تلاش کنید.',
           duration: 3200,
         }).present();
+        loading.dismiss();
       });
   }
 
@@ -136,5 +149,38 @@ export class InboxPage implements OnInit {
   selectAll() {
     this.selectedList = this.allIsSelected ? [] : this.deliveryItems.map(el => el._id);
     this.allIsSelected = !this.allIsSelected;
+  }
+
+  unassignSelectedDelivery() {
+    if (!this.selectedList.length) {
+      return;
+    }
+
+    const loading = this.loadingCtrl.create({
+      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+    });
+
+    loading.present();
+
+    this.httpService.post('delivery/unassign', {
+      delivery_ids: this.selectedList
+    }).subscribe(
+      data => {
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'مرسوله با موفقیت برداشته شد',
+          duration: 2000,
+        }).present();
+        this.isSelectMode = false;
+        this.getDeliveryItems();
+      },
+      err => {
+        console.error('Error when unassign delivery from current agent: ', err);
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'خطا در هنگام عدم انتساب مرسوله. دوباره تلاش کنید',
+          duration: 2000,
+        }).present();
+      });
   }
 }
