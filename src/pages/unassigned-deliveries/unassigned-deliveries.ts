@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {NavController, ToastController, LoadingController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
@@ -14,10 +14,10 @@ export class UnassignedDeliveriesPage {
   deliveries = [];
 
   constructor(private httpService: HttpService, private navCtrl: NavController,
-      private toastCtrl: ToastController, private loadingCtrl: LoadingController) {
+    private toastCtrl: ToastController, private loadingCtrl: LoadingController) {
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     this.getUnassignedDeliveries();
   }
 
@@ -57,20 +57,10 @@ export class UnassignedDeliveriesPage {
   }
 
   selectDelivery(item) {
-    if(this.isSelectMode) {
-      if(this.selectedList.find(el => el === item._id)) {
+    if (this.isSelectMode) {
+      if (this.selectedList.find(el => el === item._id)) {
         this.selectedList = this.selectedList.filter(el => el !== item._id);
       } else {
-        // Check priority here
-        const foundNotAssignedTodayDelivery = this.deliveries.find(el => moment(item.end, 'YYYY-MM-DD').isSame(moment(new Date())) && !this.selectedList.includes(el._id));
-        if(foundNotAssignedTodayDelivery) {
-          this.toastCtrl.create({
-            message: 'در حال حاضر مرسولات امروز انتخاب نشده وجود دارند',
-            duration: 2000
-          }).present();
-          return;
-        }
-
         this.selectedList.push(item._id);
       }
     } else {
@@ -81,11 +71,61 @@ export class UnassignedDeliveriesPage {
     }
   }
 
+  hasNotAssignedTodayDelivery() {
+    const foundNotAssignedTodayDelivery = this.deliveries.find(el => {
+      if (moment(el.end, 'YYYY-MM-DD').isSame(moment(new Date(), 'YYYY-MM-DD')) && !this.selectedList.includes(el._id)) {
+        return true;
+      }
+
+      return false;
+    });
+
+    return !!foundNotAssignedTodayDelivery;
+  }
+
   isSelectedItem(id) {
     return this.selectedList.find(el => el === id);
   }
 
   approveSelectedDeliveries() {
-    
+    if (!this.selectedList.length) {
+      return;
+    }
+
+    // Check delivery priority (continue unless there is a not-selected delivery with higher priority to deliver)
+    if (this.hasNotAssignedTodayDelivery()) {
+      this.toastCtrl.create({
+        message: 'در حال حاضر مرسولات انتخاب نشده ای مربوط به امروز وجود دارند',
+        duration: 2000
+      }).present();
+      return;
+    }
+
+    const loading = this.loadingCtrl.create({
+      content: 'در حال انتساب مرسولات. لطفاً صبر کنید ...'
+    });
+
+    loading.present();
+
+    this.httpService.post('delivery/assign', {
+      delivery_ids: this.selectedList
+    }).subscribe(
+      data => {
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'مرسولات انتخابی با موفقیت ثبت شدند',
+          duration: 2000,
+        }).present();
+        this.getUnassignedDeliveries();
+      },
+      err => {
+        console.error('Error when assign delivery to agent: ', err);
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'خطایی هنگام انتساب مرسولات رخ داد. دوباره تلاش کنید',
+          duration: 2000
+        }).present();
+        this.getUnassignedDeliveries();
+      });
   }
 }
