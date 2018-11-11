@@ -22,6 +22,7 @@ import {File} from '@ionic-native/file';
 import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native/file-transfer';
 import {CallNumber} from '@ionic-native/call-number';
 import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-complete-delivery';
+import {UnassignedDeliveriesPage} from '../pages/unassigned-deliveries/unassigned-deliveries';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-comp
     OnDeliveryPage,
     DeliveryDetailsPage,
     NotCompleteDeliveryPage,
+    UnassignedDeliveriesPage
   ],
   imports: [
     BrowserModule,
@@ -53,6 +55,7 @@ import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-comp
     OnDeliveryPage,
     DeliveryDetailsPage,
     NotCompleteDeliveryPage,
+    UnassignedDeliveriesPage
   ],
   providers: [
     StatusBar,

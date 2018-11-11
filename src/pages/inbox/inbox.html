@@ -44,5 +44,6 @@
       </div>
     </ion-item>
   </ion-list>
-  <button *ngIf="selectedList.length && isSelectMode" class="approve-selected" ion-button full (click)="approveSelectedDelivery()">قبول ارسالات انتخاب شده</button>
+  <button *ngIf="selectedList.length && isSelectMode" ion-button full (click)="approveSelectedDelivery()">قبول ارسالات انتخاب شده</button>
+  <button *ngIf="selectedList.length && isSelectMode" ion-button full (click)="unassignSelectedDelivery()" color="danger">عدم انتساب موارد انتخاب شده</button>
 </ion-content>
