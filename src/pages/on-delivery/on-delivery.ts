@@ -32,7 +32,7 @@ export class OnDeliveryPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/agent/items', {
-      delivery_status: DELIVERY_STATUS.OnDelivery,
+      // delivery_status: DELIVERY_STATUS.OnDelivery,
       is_delivered: false,
     }).subscribe(
       data => {
