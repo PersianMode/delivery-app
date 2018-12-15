@@ -1,8 +1,9 @@
 {
   "name": "pm-delivery",
-  "app_id": "",
-  "type": "ionic-angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "type": "ionic-angular",
+  "pro_id": "11ac4a7d",
+  "app_id": ""
 }

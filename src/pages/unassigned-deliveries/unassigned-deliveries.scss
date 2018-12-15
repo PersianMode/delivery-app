@@ -1,4 +1,4 @@
-page-inbox {
+page-unassigned-deliveries {
   .select-toggle {
     direction: ltr;
   }
@@ -7,7 +7,15 @@ page-inbox {
     direction: rtl;
   }
 
-  
+  .inner-item {
+    display: inline-block;
+  }
+
+  .side-title {
+    width: 40px;
+    vertical-align: text-bottom;
+  }
+
   .checked-icon {
     text-align: center;
     position: absolute;

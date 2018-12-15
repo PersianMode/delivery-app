@@ -12,6 +12,13 @@
     <ion-item>
       <ion-input class="login-input" type="password" placeholder="رمز عبور" [(ngModel)]="password"></ion-input>
     </ion-item>
+    <ion-item>
+      <ion-label>نوع کاربری</ion-label>
+      <ion-select [(ngModel)]="loginType">
+        <ion-option [value]="lt?.InternalDeliveryAgent">مسئول ارسال د اخلی</ion-option>
+        <ion-option [value]="lt?.DeliveryAgent">مسئول ارسال به مشتری</ion-option>
+      </ion-select>
+    </ion-item>
   </ion-list>
   <button ion-button color="dark" full (click)="login()">ورود</button>
-</ion-content>
+</ion-content> 

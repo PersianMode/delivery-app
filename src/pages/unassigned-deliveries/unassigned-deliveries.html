@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>ارسال های جدید</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-3>
+        <ion-icon (click)="getUnassignedDeliveries()" name="refresh"></ion-icon>
+      </ion-col>
+      <ion-col col-6 class="select-toggle-label" *ngIf="deliveries.length">
+        <ion-label *ngIf="isSelectMode">انتخاب موارد</ion-label>
+        <ion-label *ngIf="!isSelectMode">نمایش اطلاعات</ion-label>
+      </ion-col>
+      <ion-col col-3 class="select-toggle" *ngIf="deliveries.length">
+        <ion-toggle [(ngModel)]="isSelectMode"></ion-toggle>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!deliveries.length" class="center-content">
+      هیچ مرسوله ای وجود ندارد
+    </ion-row>
+  </ion-grid>
+
+  <ion-list class="delivery-list">
+    <ion-item *ngFor="let del of deliveries" (click)="selectDelivery(del)">
+      <div>
+        <div class="inner-item side-title">مبدا</div>
+        <div class="inner-item">
+          <h2>منطقه: {{getDistrict(del, false)}}</h2>
+          <h3>خیابان: {{getStreet(del, false)}}</h3>
+        </div>
+      </div>
+      <div>
+          <div class="inner-item side-title">مقصد</div>
+          <div class="inner-item">
+            <h2>منطقه: {{getDistrict(del, true)}}</h2>
+            <h3>خیابان: {{getStreet(del, true)}}</h3>
+          </div>
+        </div>
+      <div class="inner-item checked-icon">
+        <ion-icon class="checked-icon-font" *ngIf="isSelectMode && isSelectedItem(del._id)" name="checkmark-circle" color="secondary"></ion-icon>
+      </div>
+    </ion-item>
+  </ion-list>
+  <button *ngIf="selectedList.length && isSelectMode" ion-button full (click)="approveSelectedDeliveries()">انتساب مرسولات انتخابی</button>
+</ion-content>
