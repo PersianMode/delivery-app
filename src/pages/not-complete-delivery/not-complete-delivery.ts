@@ -30,7 +30,7 @@ export class NotCompleteDeliveryPage implements OnInit{
     loading.present();
 
     this.httpService.post('delivery/agent/items', {
-      delivery_status: DELIVERY_STATUS.Delivered,
+      // delivery_status: DELIVERY_STATUS.Delivered,
       is_delivered: true,
       is_processed: false,
     }).subscribe(

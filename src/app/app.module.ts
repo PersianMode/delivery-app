@@ -23,6 +23,8 @@ import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native
 import {CallNumber} from '@ionic-native/call-number';
 import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-complete-delivery';
 import {UnassignedDeliveriesPage} from '../pages/unassigned-deliveries/unassigned-deliveries';
+import {WarehouseService} from '../services/warehoues.service';
+import {OrderDetailsPage} from '../pages/order-details/order-details';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import {UnassignedDeliveriesPage} from '../pages/unassigned-deliveries/unassigne
     HistoryPage,
     ProfilePage,
     OnDeliveryPage,
+    OrderDetailsPage,
     DeliveryDetailsPage,
     NotCompleteDeliveryPage,
     UnassignedDeliveriesPage
@@ -54,6 +57,7 @@ import {UnassignedDeliveriesPage} from '../pages/unassigned-deliveries/unassigne
     ProfilePage,
     OnDeliveryPage,
     DeliveryDetailsPage,
+    OrderDetailsPage,
     NotCompleteDeliveryPage,
     UnassignedDeliveriesPage
   ],
@@ -63,6 +67,7 @@ import {UnassignedDeliveriesPage} from '../pages/unassigned-deliveries/unassigne
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthService,
     HttpService,
+    WarehouseService,
     Camera,
     File,
     FileTransfer,

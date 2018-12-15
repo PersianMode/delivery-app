@@ -14,6 +14,7 @@ export class AuthService {
     name: null,
     surname: null,
     mobile_no: null,
+    access_level: null
   };
 
   constructor(private httpService: HttpService, private storage: Storage) {
@@ -64,6 +65,7 @@ export class AuthService {
       name: data.name,
       surname: data.surname,
       mobile_no: data.mobile_no,
+      access_level: data.access_level
     };
   }
 
@@ -76,12 +78,12 @@ export class AuthService {
     this.user.next(null);
   }
 
-  login(username, password) {
+  login(username, password, loginType) {
     return new Promise((resolve, reject) => {
       this.httpService.post('app/agent/login', {
         username: username,
         password: password,
-        loginType: 4,
+        loginType,
       }).subscribe(
         res => {
           this.afterLogin(res);

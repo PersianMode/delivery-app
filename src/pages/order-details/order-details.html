@@ -1,20 +1,11 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>اطلاعات بسته ارسالی</ion-title>
+    <ion-title>لیست محصولات در مرسوله</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding style="direction: rtl">
-  <ion-grid *ngIf="shouldGetEvidence">
-    <ion-row>
-      <ion-col>
-        <button ion-button block (click)="takePhoto()">
-          گرفتن تصویر
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
+  
   <ion-list>
     <ion-list-header>اطلاعات عمومی</ion-list-header>
     <ion-item>

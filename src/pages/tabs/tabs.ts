@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import {Component} from '@angular/core';
+import {NavController} from 'ionic-angular';
 import {InboxPage} from '../inbox/inbox';
 import {HistoryPage} from '../history/history';
 import {ProfilePage} from '../profile/profile';
 import {OnDeliveryPage} from '../on-delivery/on-delivery';
-import { NotCompleteDeliveryPage } from '../not-complete-delivery/not-complete-delivery';
+import {NotCompleteDeliveryPage} from '../not-complete-delivery/not-complete-delivery';
 import {UnassignedDeliveriesPage} from '../unassigned-deliveries/unassigned-deliveries';
+import {AuthService} from '../../services/auth.service';
+import {LOGIN_TYPE} from '../../lib/login_type.enum';
 
 @Component({
   selector: 'page-tabs',
@@ -19,7 +21,11 @@ export class TabsPage {
   onDeliveryPage = OnDeliveryPage;
   notCompletePage = NotCompleteDeliveryPage;
 
-  constructor(public navCtrl: NavController) {
+  isInternal = true;
+
+  constructor(public navCtrl: NavController, private authService: AuthService) {
+
+    this.isInternal  = this.authService.userData.access_level === LOGIN_TYPE.InternalDeliveryAgent
   }
 
 }

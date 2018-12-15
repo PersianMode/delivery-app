@@ -7,10 +7,10 @@ import {Camera} from '@ionic-native/camera';
 import {WarehouseService} from '../../services/warehoues.service';
 
 @Component({
-  selector: 'page-delivery-details',
-  templateUrl: 'delivery-details.html',
+  selector: 'page-order-details',
+  templateUrl: 'order-details.html',
 })
-export class DeliveryDetailsPage implements OnInit {
+export class OrderDetailsPage implements OnInit {
   @ViewChild(Navbar) navBar: Navbar;
   deliveryDetails = null;
   isDelivered = false;
