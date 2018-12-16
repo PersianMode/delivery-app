@@ -26,7 +26,6 @@ export class MyApp implements OnInit {
 
       } catch (err) {
         console.log('-> ');
-        throw err;
       }
 
 
