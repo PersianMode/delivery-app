@@ -47,6 +47,7 @@ export class InboxPage implements OnInit {
     }).subscribe(
       res => {
         this.deliveryItems = res.data;
+
         loading.dismiss();
       },
       err => {
@@ -65,28 +66,6 @@ export class InboxPage implements OnInit {
       delivery: item,
       is_delivered: false,
     });
-
-    // if (this.isSelectMode) {
-    //   if (this.selectedList.find(el => el === item._id))
-    //     this.selectedList = this.selectedList.filter(el => el !== item._id);
-    //   else {
-    //     // Check start date-time with current date for target delivery
-    //     if (moment(item.start, 'YYYY-MM-DD HH').isAfter(moment(new Date(), 'YYYY-MM-DD HH'))) {
-    //       this.toastCtrl.create({
-    //         message: 'تاریخ/ساعت ارسال مورد انتخاب شده پیش از تاریخ/ساعت فعلی است',
-    //         duration: 2000,
-    //       }).present();
-    //       return;
-    //     }
-
-    //     this.selectedList.push(item._id);
-    //   }
-    // } else {
-    //   this.navCtrl.push(DeliveryDetailsPage, {
-    //     delivery: item,
-    //     is_delivered: false,
-    //   });
-    // }
   }
 
   showOrderLineDetails(item) {
@@ -132,10 +111,6 @@ export class InboxPage implements OnInit {
     return moment(item.start).format('YYYY-MM-DD');
   }
 
-  getStartTime(item) {
-    return moment(item.start).format('HH:mm');
-  }
-
   getDeliveryType(item) {
     if (item.from.customer && item.form.customer._id)
       return 'بازگشت';
@@ -165,15 +140,20 @@ export class InboxPage implements OnInit {
       data => {
         loading.dismiss();
         this.toastCtrl.create({
-          message: 'موارد انتخاب شده با موفقیت قبول شدند.',
+          message: 'درخواست تحویل بسته با موفقیت انجام شد',
           duration: 2300,
         }).present();
         this.load();
       },
       err => {
-        console.error('Cannot request for delivery orders: ', err);
+        console.error('Cannot request for delivery orders: ', err.error);
+
+        let message = err.error = 'selected agent has incomplete delivery' ?
+          'ارسال در حال اجرا هنوز پایان نیافته است' :
+          'خطا در درخواست بسته ارسالی. دوباره تلاش کنید'
+
         this.toastCtrl.create({
-          message: 'خطا در درخواست محموله ارسالی. دوباره تلاش کنید',
+          message,
           duration: 3200,
         }).present();
         loading.dismiss();

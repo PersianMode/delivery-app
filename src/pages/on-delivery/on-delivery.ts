@@ -4,6 +4,10 @@ import {HttpService} from '../../services/http.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
 import {CallNumber} from '@ionic-native/call-number';
+import {AuthService} from '../../services/auth.service';
+import {WarehouseService} from '../../services/warehoues.service';
+import {LOGIN_TYPE} from '../../lib/login_type.enum';
+import * as moment from 'moment';
 
 @Component({
   selector: 'page-on-delivery',
@@ -12,64 +16,109 @@ import {CallNumber} from '@ionic-native/call-number';
 export class OnDeliveryPage implements OnInit {
   deliveryItems = [];
 
-  constructor(public navCtrl: NavController, private httpService: HttpService,
-    private loadingCtrl: LoadingController, private toastCtrl: ToastController,
-    private callNumber: CallNumber, private alertCtrl: AlertController) {
+  constructor(
+    private callNumber: CallNumber, public navCtrl: NavController, private httpService: HttpService,
+    private toastCtrl: ToastController, private loadingCtrl: LoadingController,
+    private authService: AuthService, private warehouseService: WarehouseService,
+    private alertCtrl: AlertController) {
   }
 
   ngOnInit() {
   }
 
   ionViewDidEnter() {
-    this.getDeliveryItems();
+    this.load();
   }
-  
-  getDeliveryItems() {
+
+  load() {
     const loading = this.loadingCtrl.create({
-      content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'
+      content: 'در حال دریافت لیست ارسال ها. لطفا صبر کنید ...'
     });
 
     loading.present();
 
-    this.httpService.post('delivery/agent/items', {
-      // delivery_status: DELIVERY_STATUS.OnDelivery,
-      is_delivered: false,
+    this.httpService.post('search/DeliveryTicket', {
+      offset: 0,
+      limit: 100,
+      options: {
+        type: "OnDelivery"
+      }
     }).subscribe(
-      data => {
-        this.deliveryItems = data;
+      res => {
+        this.deliveryItems = res.data;
         loading.dismiss();
       },
       err => {
-        console.error('Cannot fetch delivery items as on delivery items: ', err);
+        console.error('Cannot get delivery box: ', err);
         loading.dismiss();
-
         this.toastCtrl.create({
-          message: 'قادر به دریافت لیست موارد در حال ارسال نیستیم. دوباره تلاش کنید',
+          message: 'خطا در دریافت ارسال های در حال اجرا. دوباره تلاش کنید',
           duration: 3200,
         }).present();
       });
   }
 
   getDistrict(item) {
-    const district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : item.to.warehouse.address.disctrict;
-    return district ? district : '-';
+    let district;
+    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
+      district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : '-'
+    } else {
+      district = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+    }
+    return district;
   }
 
   getStreet(item) {
-    const street = item.to.customer && item.to.customer._id ? item.to.customer.address.street : item.to.warehouse.address.street;
-    return street && street.trim() ? street : '-';
+
+    let street;
+    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
+      street = item.to.customer && item.to.customer._id ? item.to.customer.address.street : '-'
+    } else {
+      street = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+    }
+    return street.trim();
   }
 
   getReceiverName(item) {
-    const receiverName = item.to.customer && item.to.customer._id ? this.getConcatinatedName(item.to.customer.first_name, item.to.customer.surname) : item.to.warehouse.name;
-    return receiverName && receiverName.trim() ? receiverName : '-';
+    let receiver;
+    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
+      receiver = item.to.customer && item.to.customer._id ? this.getConcatinatedName(item.to.customer.first_name, item.to.customer.surname) : '-'
+    } else {
+      receiver = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    }
+    return receiver;
   }
 
   private getConcatinatedName(name1, name2) {
     return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
   }
 
-  deliveryDetails(item) {
+  getStartDate(item) {
+    return moment(item.start).format('YYYY-MM-DD');
+  }
+  getActualStartDate(item) {
+    return moment(item.delivery_start).format('YYYY-MM-DD');
+  }
+
+  getStartTime(item) {
+    return moment(item.delivery_start).format('HH:mm');
+  }
+
+  getDeliveryType(item) {
+    if (item.from.customer && item.form.customer._id)
+      return 'بازگشت';
+    else if (item.to.customer && item.to.customer._id)
+      return 'ارسال به مشتری';
+    else if (item.to.warehouse_id)
+      return 'داخلی'
+  }
+
+  showOrderLineDetails(item) {
+
+  }
+
+  
+  selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
     });
