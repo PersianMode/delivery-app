@@ -48,6 +48,7 @@ export class InboxPage implements OnInit {
       }
     }).subscribe(
       res => {
+        console.log('res:', res);
         this.deliveryItems = res.data;
 
         loading.dismiss();
