@@ -14,7 +14,7 @@ import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 })
 export class InboxPage implements OnInit {
   deliveryItems = [];
-  optionFull = true;
+  Full = true;
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
@@ -44,7 +44,7 @@ export class InboxPage implements OnInit {
       limit: 100,
       options: {
         type: "InternalAssinedDelivery",
-        optionFull:  this.optionFull
+        Full:  this.Full
       }
     }).subscribe(
       res => {
