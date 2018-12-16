@@ -117,7 +117,7 @@ export class OnDeliveryPage implements OnInit {
 
   }
 
-  
+
   selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
@@ -125,13 +125,15 @@ export class OnDeliveryPage implements OnInit {
   }
 
   callReceiver(item) {
-    const tf = item.is_return ? 'from' : 'to';
     let phoneNumber = "";
 
-    if (Object.keys(item[tf].customer).length)
-      phoneNumber = item[tf].customer.address.recipient_mobile_no ? item[tf].customer.address.recipient_mobile_no : '';
-    else
-      phoneNumber = item[tf].warehouse.phone ? item[tf].warehouse.phone : '';
+    if (item.to.customer)
+      phoneNumber = item.to.customer.address.recipient_mobile_no ? item.to.customer.address.recipient_mobile_no : '';
+    else {
+
+      phoneNumber = this.warehouseService.getWarehouse(item.to.warehouse_id).phone || '';
+
+    }
 
     if (phoneNumber)
       this.callNumber.callNumber(phoneNumber, true)
@@ -152,7 +154,7 @@ export class OnDeliveryPage implements OnInit {
   finishDelivery(item) {
     if (item.delivery_end) {
       this.toastCtrl.create({
-        message: 'مرسوله مورد نظر پیشتر به پایان رسیده بود.',
+        message: 'این ارسال مورد نظر پیشتر به پایان رسیده است.',
         duration: 2000,
       }).present();
 
@@ -162,7 +164,7 @@ export class OnDeliveryPage implements OnInit {
 
     this.alertCtrl.create({
       title: 'تأیید ارسال',
-      message: 'آیا ارسال این مرسوله به پایان رسیده است؟',
+      message: 'آیا ارسال به پایان رسیده است؟',
       buttons: [
         {
           text: 'لغو',
@@ -173,20 +175,19 @@ export class OnDeliveryPage implements OnInit {
         {
           text: 'بله',
           handler: () => {
-            this.httpService.post('delivery/finish', {
-              _id: item._id,
+            this.httpService.post('delivery/end', {
+              deliveryId: item._id,
             }).subscribe(
               data => {
-                this.deliveryItems = this.deliveryItems.filter(el => el._id !== item._id);
-                item.delivery_end = new Date();
                 this.toastCtrl.create({
                   message: 'ارسال به پایان رسید',
                   duration: 1200,
                 }).present();
+                this.load();
               },
               err => {
                 this.toastCtrl.create({
-                  message: 'به اتمام رساندن مرسوله به مشکل با خطا مواجه شد. شاید این مرسوله پیشتر به اتمام رسیده باشد',
+                  message: 'پایان ارسال با خطا مواجه شد. شاید این ارسال پیشتر به پایان یافته باشد',
                   duration: 2000,
                 }).present();
               });
