@@ -35,8 +35,11 @@
       </div>
       <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
       
-      <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="requestDeliveryOrders(del)" style="margin-top: 20px ">درخواست دریافت مرسوله</button>
-      <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="unassignDelivery(del)" color="danger">عدم قبول ارسال</button>
+      
+      <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="requestDeliveryOrders(del)" style="margin-top: 20px">درخواست دریافت مرسوله</button>
+      <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="unassignDelivery(del)" color="danger" style="margin-top: 20px">عدم قبول ارسال</button>
+      
+      <button ion-button full *ngIf="isDeliveryOrdersRequested(del)" (click)="startDelivery(del)" style="margin-top: 20px">شروع ارسال</button>
 
     </ion-item>
   </ion-list>

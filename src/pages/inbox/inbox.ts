@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {NavController, ToastController, LoadingController} from 'ionic-angular';
+import {NavController, ToastController, LoadingController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
 import * as moment from 'moment';
@@ -18,7 +18,8 @@ export class InboxPage implements OnInit {
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
-    private authService: AuthService, private warehouseService: WarehouseService) {
+    private authService: AuthService, private warehouseService: WarehouseService,
+    private alertCtrl: AlertController) {
   }
 
   ngOnInit() {
@@ -33,7 +34,7 @@ export class InboxPage implements OnInit {
 
   load() {
     const loading = this.loadingCtrl.create({
-      content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'
+      content: 'در حال دریافت لیست ارسال ها. لطفا صبر کنید ...'
     });
 
     loading.present();
@@ -91,7 +92,7 @@ export class InboxPage implements OnInit {
     // }
   }
 
-  showOrderLineDetails(item){
+  showOrderLineDetails(item) {
 
   }
 
@@ -152,44 +153,8 @@ export class InboxPage implements OnInit {
   }
 
   requestDeliveryOrders() {
-    // if (!this.selectedList.length)
-    //   return;
-
-    // const loading = this.loadingCtrl.create({
-    //   content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
-    // });
-
-    // loading.present();
-
-    // this.httpService.post('delivery/status', {
-    //   delivery_ids: this.selectedList,
-    //   target_status: DELIVERY_STATUS.OnDelivery,
-    // }).subscribe(
-    //   data => {
-    //     this.deliveryItems = this.deliveryItems.filter(el => !this.selectedList.includes(el._id));
-    //     this.selectedList = [];
-
-    //     loading.dismiss();
-    //     this.toastCtrl.create({
-    //       message: 'موارد انتخاب شده با موفقیت قبول شدند.',
-    //       duration: 2300,
-    //     }).present();
-    //   },
-    //   err => {
-    //     console.error('Cannot set/chagne status of selected items: ', err);
-    //     this.toastCtrl.create({
-    //       message: 'قبول موارد انتخاب شده با مشکل مواجه شد. دوباره تلاش کنید.',
-    //       duration: 3200,
-    //     }).present();
-    //     loading.dismiss();
-    //   });
-  }
-
-
-  unassignDelivery() {
-    // if (!this.selectedList.length) {
-    //   return;
-    // }
+    if (!this.deliveryItems.length)
+      return;
 
     const loading = this.loadingCtrl.create({
       content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
@@ -197,25 +162,141 @@ export class InboxPage implements OnInit {
 
     loading.present();
 
-    // this.httpService.post('delivery/unassign', {
-    //   delivery_ids: this.selectedList
-    // }).subscribe(
-    //   data => {
-    //     loading.dismiss();
-    //     this.toastCtrl.create({
-    //       message: 'مرسوله با موفقیت برداشته شد',
-    //       duration: 2000,
-    //     }).present();
-    //     this.isSelectMode = false;
-    //     this.load();
-    //   },
-    //   err => {
-    //     console.error('Error when unassign delivery from current agent: ', err);
-    //     loading.dismiss();
-    //     this.toastCtrl.create({
-    //       message: 'خطا در هنگام عدم انتساب مرسوله. دوباره تلاش کنید',
-    //       duration: 2000,
-    //     }).present();
-    //   });
+    this.httpService.post('delivery/requestPackage', {
+      deliveryId: this.deliveryItems[0]._id,
+    }).subscribe(
+      data => {
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'موارد انتخاب شده با موفقیت قبول شدند.',
+          duration: 2300,
+        }).present();
+        this.load();
+      },
+      err => {
+        console.error('Cannot request for delivery orders: ', err);
+        this.toastCtrl.create({
+          message: 'خطا در درخواست محموله ارسالی. دوباره تلاش کنید',
+          duration: 3200,
+        }).present();
+        loading.dismiss();
+      });
+  }
+
+
+  unassignDelivery() {
+    if (!this.deliveryItems.length) {
+      return;
+    }
+
+    const loading = this.loadingCtrl.create({
+      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+    });
+
+    loading.present();
+
+    this.httpService.post('delivery/unassign', {
+      deliveryId: this.deliveryItems[0]._id
+    }).subscribe(
+      data => {
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'ارسال با موفقت از لیست شما حذف شد',
+          duration: 2000,
+        }).present();
+        this.load();
+      },
+      err => {
+        console.error('Error when unassign delivery from current agent: ', err);
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'خطا به هنگام حذف ارسال از لیست. دوباره تلاش کنید',
+          duration: 2000,
+        }).present();
+      });
+  }
+
+  startDelivery(item) {
+
+    const loading = this.loadingCtrl.create({
+      content: 'در حال بررسی موارد اسکن شده. لطفا صبر کنید ...'
+    });
+
+    loading.present();
+
+    this.httpService.post('delivery/start', {
+      deliveryId: item._id,
+      preCheck: true
+    }).subscribe(res => {
+
+
+      loading.dismiss();
+      if (!res || !res.length) {
+        this.toastCtrl.create({
+          message: 'هیچ یک از محصولات اسکن نشده است',
+          duration: 2000,
+        }).present();
+        return;
+      }
+
+      let message;
+
+      let totalDeliveryOrderLines = [];
+      this.deliveryItems[0].order_details.forEach(x => {
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_line_ids);
+      })
+
+      if (res.length === totalDeliveryOrderLines.length)
+        message = 'everything is OK. start scan?'
+      else {
+        message = `${res.length} of ${totalDeliveryOrderLines.length} is ready. start scan?`
+      }
+      let alert = this.alertCtrl.create({
+        title: 'شروع ارسال',
+        message,
+        buttons: [
+          {
+            text: 'خیر',
+            role: 'cancel',
+            handler: () => {
+            }
+          },
+          {
+            text: 'بله',
+            handler: () => {
+              const loading = this.loadingCtrl.create({
+                content: 'در حال شروع ارسال. لطفا صبر کنید ...'
+              });
+              loading.present();
+
+              this.httpService.post('delivery/start', {
+                deliveryId: item._id,
+              }).subscribe(res => {
+                loading.dismiss();
+                this.load();
+              }, err => {
+                console.error('Error on start delivery ', err);
+                loading.dismiss();
+                this.toastCtrl.create({
+                  message: 'خطا به هنگام شروع ارسال. دوباره تلاش کنید',
+                  duration: 2000,
+                }).present();
+              });
+            }
+          }
+        ]
+      });
+      alert.present();
+    }, err => {
+      console.error('Error on pre check order line before delivery started ', err);
+      loading.dismiss();
+      this.toastCtrl.create({
+        message: 'خطا به هنگام بررسی موارد اسکن شده. دوباره تلاش کنید',
+        duration: 2000,
+      }).present();
+    })
+
+
+
   }
 }
