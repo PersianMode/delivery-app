@@ -1,18 +1,24 @@
 page-order-details {
-    .item-value {
-      text-align: left;
-    }
-  
-    .to-part {
-      margin-top: 20px;
-    }
-  
-    .title {
-      font-size: 0.8em;
-    }
-  
-    .content {
-      font-size: 0.7em;
-    }
+
+  .products {
+    font-size: 15px;
+    text-align: left;
+    display: inline-block;
   }
+
+  .thumbnail {
+    padding: 20px;
+    font-size: 10px;
+    text-align: left;
+   
+  }
+.container{
   
+margin-left: 0;
+  text-align: left;
+}
+.checkbox{
+  padding: 15px;
+}
+
+}

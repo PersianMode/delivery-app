@@ -7,6 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
+import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
   selector: 'page-inbox',
@@ -72,6 +73,10 @@ export class InboxPage implements OnInit {
   }
 
   showOrderLineDetails(item) {
+    this.navCtrl.push(OrderDetailsPage, {
+      delivery: item,
+      is_delivered: false,
+    });
 
   }
 
