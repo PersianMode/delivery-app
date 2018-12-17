@@ -136,29 +136,6 @@ this.loadProducts(this.productIds)
 
 
 
-
-
-  // getProduct(productId) {
-  //   const found = this.products.findIndex(r => r._id === productId);
-  //   if (found >= 0 && this.products[found].detailed) {
-  //     this.product$.next(this.products[found]);
-  //   } else {
-  //     this.httpService.get(`product/${productId}`).subscribe(data => {
-  //       this.enrichProductData(data);
-  //       if (found >= 0) {
-  //         this.products[found] = data;
-  //       }
-  //       this.product$.next(data);
-  //     });
-  //   }
-  // }
-
-
-
-
-
-
-
   takePhoto(st) {
     if (!this.shouldGetEvidence)
       return;

@@ -26,10 +26,6 @@ export class MyApp implements OnInit {
 
       } catch (err) {
         console.log('-> ');
-<<<<<<< HEAD
-        throw err;
-=======
->>>>>>> 5bef583b6622e0357ea7d09053c8969198c37d75
       }
 
 
