@@ -223,7 +223,7 @@ export class InboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_line_ids);
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines);
       })
 
       if (res.length === totalDeliveryOrderLines.length)
