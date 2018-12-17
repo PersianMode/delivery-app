@@ -1,6 +1,7 @@
 export enum DELIVERY_STATUS {
-  ReadyToDelivery = 7,
-  DeliverySet = 8,
-  OnDelivery = 9,
-  Delivered = 10,
+  default=  1,
+  agentSet = 2,
+  requestPackage = 3,
+  started = 4,
+  ended = 5,
 };
