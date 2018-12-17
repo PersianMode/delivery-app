@@ -27,7 +27,9 @@
         </div>
         <div style="margin-top: 10px">
           <h3>تاریخ شروع: {{getStartDate(del)}}</h3>
-          <h3>ساعت شروع: {{getStartTime(del)}}</h3>
+        </div>
+        <div style="margin-top: 10px">
+          <h3>نوع انتقال: {{getDeliveryType(del)}}</h3>
         </div>
         <div style="margin-top: 10px">
           <h3>نوع انتقال: {{getDeliveryType(del)}}</h3>
@@ -35,8 +37,16 @@
       </div>
       <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
       
+<<<<<<< HEAD
       <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="requestDeliveryOrders(del)" style="margin-top: 20px ">درخواست دریافت مرسوله</button>
       <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="unassignDelivery(del)" color="danger">عدم قبول ارسال</button>
+=======
+      
+      <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="requestDeliveryOrders(del)" style="margin-top: 20px">درخواست دریافت مرسوله</button>
+      <button ion-button full *ngIf="!isDeliveryOrdersRequested(del)" (click)="unassignDelivery(del)" color="danger" style="margin-top: 20px">عدم قبول ارسال</button>
+      
+      <button ion-button full *ngIf="isDeliveryOrdersRequested(del)" (click)="startDelivery(del)" style="margin-top: 20px">شروع ارسال</button>
+>>>>>>> 5bef583b6622e0357ea7d09053c8969198c37d75
 
     </ion-item>
   </ion-list>
