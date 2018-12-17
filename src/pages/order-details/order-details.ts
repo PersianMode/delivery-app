@@ -15,6 +15,8 @@ export class OrderDetailsPage implements OnInit {
   deliveryDetails = null;
   isDelivered = false;
   shouldGetEvidence = false;
+  products =[];
+  productIds = [];
   address_parts = [
     {
       name: 'province',
@@ -53,7 +55,9 @@ export class OrderDetailsPage implements OnInit {
     this.deliveryDetails = this.navParams.data.delivery;
     this.isDelivered = this.navParams.data.is_delivered || false;
     this.shouldGetEvidence = this.navParams.data.get_evidence || false;
-
+    this.productIds = this.deliveryDetails.order_details[0].product_ids;
+console.log(this.productIds)
+this.loadProducts(this.productIds)
   }
 
   getAddressPart(direction, part) {
@@ -116,6 +120,44 @@ export class OrderDetailsPage implements OnInit {
   getEvidenceImage() {
     return HttpService.Host + this.deliveryDetails.delivered_evidence;
   }
+
+
+
+
+  loadProducts(productIds) {
+    return new Promise((resolve) => {
+      this.httpService.post('product/getMultiple', { productIds })
+        .subscribe(data => {
+          this.products = data;
+          resolve(data);
+        });
+    });
+  }
+
+
+
+
+
+  // getProduct(productId) {
+  //   const found = this.products.findIndex(r => r._id === productId);
+  //   if (found >= 0 && this.products[found].detailed) {
+  //     this.product$.next(this.products[found]);
+  //   } else {
+  //     this.httpService.get(`product/${productId}`).subscribe(data => {
+  //       this.enrichProductData(data);
+  //       if (found >= 0) {
+  //         this.products[found] = data;
+  //       }
+  //       this.product$.next(data);
+  //     });
+  //   }
+  // }
+
+
+
+
+
+
 
   takePhoto(st) {
     if (!this.shouldGetEvidence)

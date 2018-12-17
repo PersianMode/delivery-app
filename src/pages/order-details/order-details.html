@@ -65,4 +65,11 @@
       <ion-label class="item-value content">{{getAddressPart('to', ap.name)}}</ion-label>
     </ion-item>
   </ion-list>
+  <ion-item *ngFor=" let prod of products">
+    <ion-label>{{prod.colors[0].image.thumbnail}}</ion-label>
+  </ion-item>
+  
 </ion-content>
+
+
+  
