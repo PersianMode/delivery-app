@@ -15,7 +15,6 @@ export class OrderDetailsPage implements OnInit {
   products = [];
   productdata = [];
   imagesrc;
-  ticketStatus = [];
   orderlines = [];
   productIds = [];
 orderStatus={};
@@ -27,7 +26,8 @@ orderStatus={};
     this.deliveryDetails = this.navParams.data.delivery;
     this.isDelivered = this.navParams.data.is_delivered || false;
     this.deliveryDetails.order_details.forEach(element => {
-      this.productIds.push(element.order_lines[0].product_id);
+       for (let i=0;i<element.order_lines.length;i++)
+       { this.productIds.push(element.order_lines[i].product_id)};
       this.productdata.push({
         productId: element.order_lines[0].product_id,
         productTicket: element.order_lines[0].tickets[element.order_lines[0].tickets.length - 1]
@@ -40,6 +40,8 @@ this.orderStatus= this.deliveryDetails.last_ticket
       this.orderlines.push(orderline)
 
     });
+    console.log('>>>>>>>',this.productIds);
+    
     this.loadProducts(this.productIds)
 
 
@@ -59,7 +61,8 @@ this.orderStatus= this.deliveryDetails.last_ticket
           this.productdata.forEach(el => {
             this.products.filter(p => p._id == el.productId)[0].ticket = el.productTicket
           })
-          this.ticketStatus = this.products.filter(a => (a.ticket.status !== '9' || (a.ticket.status !== '10')))
+          console.log(this.products);
+          
 
 
         });
