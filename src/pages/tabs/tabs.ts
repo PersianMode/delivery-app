@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
-import {InboxPage} from '../inbox/inbox';
 import {HistoryPage} from '../history/history';
 import {ProfilePage} from '../profile/profile';
 import {OnDeliveryPage} from '../on-delivery/on-delivery';
@@ -8,6 +7,7 @@ import {NotCompleteDeliveryPage} from '../not-complete-delivery/not-complete-del
 import {UnassignedDeliveriesPage} from '../unassigned-deliveries/unassigned-deliveries';
 import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
+import {InternalInboxPage} from '../internal-inbox/internal-inbox';
 
 @Component({
   selector: 'page-tabs',
@@ -15,7 +15,7 @@ import {LOGIN_TYPE} from '../../lib/login_type.enum';
 })
 export class TabsPage {
   unassignedPage = UnassignedDeliveriesPage;
-  inboxPage = InboxPage;
+  internalInboxPage = InternalInboxPage;
   historyPage = HistoryPage;
   profilePage = ProfilePage;
   onDeliveryPage = OnDeliveryPage;

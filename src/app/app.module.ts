@@ -12,7 +12,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {ReactiveFormsModule} from '@angular/forms';
 import {IonicStorageModule} from '@ionic/storage';
 import {TabsPage} from '../pages/tabs/tabs';
-import {InboxPage} from '../pages/inbox/inbox';
+import {InternalInboxPage} from '../pages/internal-inbox/internal-inbox';
 import {HistoryPage} from '../pages/history/history';
 import {ProfilePage} from '../pages/profile/profile';
 import {OnDeliveryPage} from '../pages/on-delivery/on-delivery';
@@ -31,7 +31,7 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     MyApp,
     LoginPage,
     TabsPage,
-    InboxPage,
+    InternalInboxPage,
     HistoryPage,
     ProfilePage,
     OnDeliveryPage,
@@ -52,7 +52,7 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     MyApp,
     LoginPage,
     TabsPage,
-    InboxPage,
+    InternalInboxPage,
     HistoryPage,
     ProfilePage,
     OnDeliveryPage,

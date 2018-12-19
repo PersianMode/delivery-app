@@ -9,10 +9,10 @@ import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 
 @Component({
-  selector: 'page-inbox',
-  templateUrl: 'inbox.html',
+  selector: 'page-internal-inbox',
+  templateUrl: 'internal-inbox.html',
 })
-export class InboxPage implements OnInit {
+export class InternalInboxPage implements OnInit {
   deliveryItems = [];
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
