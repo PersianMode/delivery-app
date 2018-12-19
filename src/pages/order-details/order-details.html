@@ -1,24 +1,35 @@
- <ion-header>
+<ion-header>
   <ion-navbar>
     <ion-title>لیست محصولات در مرسوله</ion-title>
   </ion-navbar>
-</ion-header> 
+</ion-header>
 
- <ion-content padding style="direction: rtl; text-align:left">
-    <div *ngFor="let ol of orderlines" >
-  <ion-card   class="products" *ngFor= "let prod of products">
-        <div *ngIf="prod._id == ol.order_lines[0].product_id" class="container">
-      
-          <ion-item class="products" >{{prod.name}}
-            <img class="thumbnail" src="{{getimagesrc(prod)}}"/>
+<ion-content padding style="direction: rtl; text-align:left">
+
+  <div *ngFor="let prod of products">
+    <div *ngIf=" orderStatus.status == '3' || orderStatus.status == '4'">
+      <ion-card *ngIf="prod.ticket.status == '9'">
+        <ion-item class="products">{{prod.name}}
+          <ion-icon ios="ios-clock" md="md-clock" class="ion-icon-inp"></ion-icon>
         </ion-item>
-  
+        <img class="thumbnail" src="{{getimagesrc(prod)}}" />
+      </ion-card>
 
+      <ion-card *ngIf="prod.ticket.status == '10'||prod.ticket.status == '4'">
+        <ion-item class="products">{{prod.name}}
+          <ion-icon ios="ios-checkbox-outline" md="md-checkbox-outline" class="ion-icon-done"></ion-icon>
+        </ion-item>
+        <img class="thumbnail" src="{{getimagesrc(prod)}}" />
+      </ion-card>
     </div>
 
-  </ion-card>
-</div>
+
+    <ion-card *ngIf=" orderStatus.status == '2'">
+      <ion-item class="products">{{prod.name}}
+      </ion-item>
+      <img class="thumbnail" src="{{getimagesrc(prod)}}" />
+    </ion-card>
+
+  </div>
+
 </ion-content>
-
-
-  

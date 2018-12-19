@@ -1,10 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NavController, Navbar, NavParams, ToastController, LoadingController } from 'ionic-angular';
-import * as moment from 'moment';
+import { NavController, Navbar, NavParams } from 'ionic-angular';
 import { HttpService } from '../../services/http.service';
-import { FileTransfer, FileTransferObject, FileUploadOptions } from '@ionic-native/file-transfer';
-import { Camera } from '@ionic-native/camera';
-import { WarehouseService } from '../../services/warehoues.service';
+import {imagePathFixer} from '../../lib/imagePathFixer';
 
 
 @Component({
@@ -16,34 +13,41 @@ export class OrderDetailsPage implements OnInit {
   deliveryDetails = null;
   isDelivered = false;
   products = [];
-  productIds = [];
+  productdata = [];
   imagesrc;
-  ticketstatus;
-  tickets = [];
-  orderlines=[];
+  ticketStatus = [];
+  orderlines = [];
+  productIds = [];
+orderStatus={};
   constructor(public navCtrl: NavController, private navParams: NavParams,
     private httpService: HttpService) {
   }
-
   ngOnInit() {
     this.navBar.setBackButtonText("بازگشت");
     this.deliveryDetails = this.navParams.data.delivery;
     this.isDelivered = this.navParams.data.is_delivered || false;
     this.deliveryDetails.order_details.forEach(element => {
-      this.productIds.push(element.order_lines[0].product_id)
+      this.productIds.push(element.order_lines[0].product_id);
+      this.productdata.push({
+        productId: element.order_lines[0].product_id,
+        productTicket: element.order_lines[0].tickets[element.order_lines[0].tickets.length - 1]
+      })
     })
+this.orderStatus= this.deliveryDetails.last_ticket
+
+
     this.deliveryDetails.order_details.forEach(orderline => {
-     this.orderlines.push(orderline)
-      
+      this.orderlines.push(orderline)
+
     });
-
-    console.log(this.orderlines)
     this.loadProducts(this.productIds)
-  
-  }
 
+
+
+  }
+  
   getimagesrc(product) {
-    return [HttpService.Host, HttpService.PRODUCT_IMAGE_PATH, product.id, product.colors[0].id, product.colors[0].image.thumnail].join('/');
+    return imagePathFixer(product.colors[0].image.thunail,product._id, product.colors[0]._id)
   }
 
 
@@ -52,14 +56,15 @@ export class OrderDetailsPage implements OnInit {
       this.httpService.post('product/getMultiple', { productIds })
         .subscribe(data => {
           this.products = data;
-         console.log(data);
+          this.productdata.forEach(el => {
+            this.products.filter(p => p._id == el.productId)[0].ticket = el.productTicket
+          })
+          this.ticketStatus = this.products.filter(a => (a.ticket.status !== '9' || (a.ticket.status !== '10')))
 
-          resolve(data);
+
         });
     });
   }
-
-
 
 
 
