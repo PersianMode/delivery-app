@@ -43,7 +43,7 @@ export class InboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "InternalAssinedDelivery",
+        type: "InternalAssignedDelivery",
         Full:  this.Full
       }
     }).subscribe(
@@ -152,7 +152,7 @@ export class InboxPage implements OnInit {
         console.error('Cannot request for delivery orders: ', err.error);
 
         let message = err.error = 'selected agent has incomplete delivery' ?
-          'ارسال در حال اجرا هنوز پایان نیافته است' :
+          'ارسال هنوز شروع نشده است' :
           'خطا در درخواست بسته ارسالی. دوباره تلاش کنید'
 
         this.toastCtrl.create({
