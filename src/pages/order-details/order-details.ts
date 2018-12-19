@@ -40,6 +40,7 @@ this.orderStatus= this.deliveryDetails.last_ticket
       this.orderlines.push(orderline)
 
     });
+    
     console.log('>>>>>>>',this.productIds);
     
     this.loadProducts(this.productIds)
