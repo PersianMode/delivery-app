@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, Navbar, NavParams } from 'ionic-angular';
 import { HttpService } from '../../services/http.service';
-import {imagePathFixer} from '../../lib/imagePathFixer';
+import { imagePathFixer } from '../../lib/imagePathFixer';
 
 
 @Component({
@@ -17,7 +17,7 @@ export class OrderDetailsPage implements OnInit {
   imagesrc;
   orderlines = [];
   productIds = [];
-orderStatus={};
+  orderStatus = {};
   constructor(public navCtrl: NavController, private navParams: NavParams,
     private httpService: HttpService) {
   }
@@ -25,32 +25,33 @@ orderStatus={};
     this.navBar.setBackButtonText("بازگشت");
     this.deliveryDetails = this.navParams.data.delivery;
     this.isDelivered = this.navParams.data.is_delivered || false;
-    this.deliveryDetails.order_details.forEach(element => {
-       for (let i=0;i<element.order_lines.length;i++)
-       { this.productIds.push(element.order_lines[i].product_id)};
-      this.productdata.push({
-        productId: element.order_lines[0].product_id,
-        productTicket: element.order_lines[0].tickets[element.order_lines[0].tickets.length - 1]
-      })
+     this.productdata = this.deliveryDetails.order_details.flatMap(each => each.order_lines).map(each => {
+      return {
+        productId: each.product_id,
+        productTicket: each.tickets[each.tickets.length - 1]
+      }
     })
-this.orderStatus= this.deliveryDetails.last_ticket
+
+    this.productIds = this.deliveryDetails.order_details.flatMap(each => each.order_lines).map(each => each.product_id)
+
+    this.orderStatus = this.deliveryDetails.last_ticket
 
 
     this.deliveryDetails.order_details.forEach(orderline => {
       this.orderlines.push(orderline)
 
     });
-    
-    console.log('>>>>>>>',this.productIds);
-    
+
+    console.log('>>>>>>>', this.productIds);
+
     this.loadProducts(this.productIds)
 
 
 
   }
-  
+
   getimagesrc(product) {
-    return imagePathFixer(product.colors[0].image.thunail,product._id, product.colors[0]._id)
+    return imagePathFixer(product.colors[0].image.thunail, product._id, product.colors[0]._id)
   }
 
 
@@ -58,12 +59,14 @@ this.orderStatus= this.deliveryDetails.last_ticket
     return new Promise((resolve) => {
       this.httpService.post('product/getMultiple', { productIds })
         .subscribe(data => {
-          this.products = data;
+          this.productIds.forEach((element) => {
+            this.products.push(data.find(one => one._id == element));
+          });
           this.productdata.forEach(el => {
             this.products.filter(p => p._id == el.productId)[0].ticket = el.productTicket
           })
           console.log(this.products);
-          
+
 
 
         });
