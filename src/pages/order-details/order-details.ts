@@ -51,7 +51,7 @@ export class OrderDetailsPage implements OnInit {
   }
 
   getimagesrc(product) {
-    return imagePathFixer(product.colors[0].image.thunail, product._id, product.colors[0]._id)
+    return imagePathFixer(product.colors[0].image.thumbnail, product._id, product.colors[0]._id)
   }
 
 
