@@ -14,8 +14,6 @@ export class OrderDetailsPage implements OnInit {
   isDelivered = false;
   products = [];
   productdata = [];
-  imagesrc;
-  orderlines = [];
   productIds = [];
   orderStatus = {};
   constructor(public navCtrl: NavController, private navParams: NavParams,
@@ -31,49 +29,26 @@ export class OrderDetailsPage implements OnInit {
         productTicket: each.tickets[each.tickets.length - 1]
       }
     })
-
     this.productIds = this.deliveryDetails.order_details.flatMap(each => each.order_lines).map(each => each.product_id)
-
     this.orderStatus = this.deliveryDetails.last_ticket
-
-
-    this.deliveryDetails.order_details.forEach(orderline => {
-      this.orderlines.push(orderline)
-
-    });
-
-    console.log('>>>>>>>', this.productIds);
-
     this.loadProducts(this.productIds)
-
-
-
   }
 
   getimagesrc(product) {
     return imagePathFixer(product.colors[0].image.thumbnail, product._id, product.colors[0]._id)
   }
 
-
   loadProducts(productIds) {
     return new Promise((resolve) => {
       this.httpService.post('product/getMultiple', { productIds })
         .subscribe(data => {
-          this.productIds.forEach((element) => {
-            this.products.push(data.find(one => one._id == element));
+          this.productIds.forEach((element) => { 
+            this.products.push(JSON.parse(JSON.stringify(data.find(one => one._id == element)))); 
           });
           this.productdata.forEach(el => {
-            this.products.filter(p => p._id == el.productId)[0].ticket = el.productTicket
+            this.products.filter(p => p._id == el.productId && !p.ticket)[0].ticket = el.productTicket
           })
-          console.log(this.products);
-
-
-
         });
     });
   }
-
-
-
-
 }
