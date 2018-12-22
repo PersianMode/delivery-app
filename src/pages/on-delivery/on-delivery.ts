@@ -15,6 +15,7 @@ import * as moment from 'moment';
 })
 export class OnDeliveryPage implements OnInit {
   deliveryItems = [];
+  Full = true;
 
   constructor(
     private callNumber: CallNumber, public navCtrl: NavController, private httpService: HttpService,
@@ -41,10 +42,12 @@ export class OnDeliveryPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "OnDelivery"
+        type: "OnDelivery",
+        Full: this.Full
       }
     }).subscribe(
       res => {
+        console.log('res on-delivery: ', res);
         this.deliveryItems = res.data;
         loading.dismiss();
       },

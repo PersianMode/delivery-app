@@ -44,7 +44,7 @@ export class InboxPage implements OnInit {
       limit: 100,
       options: {
         type: "InternalAssignedDelivery",
-        Full:  this.Full
+        Full: this.Full
       }
     }).subscribe(
       res => {
