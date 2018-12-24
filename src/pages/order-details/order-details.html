@@ -7,15 +7,15 @@
 <ion-content padding style="direction: rtl; text-align:left">
 
   <div *ngFor="let prod of products">
-    <div *ngIf=" orderStatus.status == '3' || orderStatus.status == '4'">
-      <ion-card *ngIf="prod.ticket.status == '9'">
+    <div *ngIf=" orderStatus.status === deliverystatus.requestPackage || orderStatus.status === deliverystatus.started">
+      <ion-card *ngIf="prod.ticket.status == orderlinestatus.FinalCheck">
           
       <ion-icon class="ion-icon-inp" ios="ios-time-outline" md="md-time-outline"></ion-icon>
       <div class="products">{{prod.name}}</div>
       <img src="{{getimagesrc(prod)}}" />
       </ion-card>
 
-      <ion-card *ngIf="prod.ticket.status == '10'|| prod.ticket.status == '4'">
+      <ion-card *ngIf="prod.ticket.status === orderlinestatus.Checked || prod.ticket.status === orderlinestatus.ReadyToDeliver">
          <ion-icon ios="ios-checkmark" md="md-checkmark" class="ion-icon-done"></ion-icon>
         <div class="products">{{prod.name}}</div>
         <img src="{{getimagesrc(prod)}}" />
@@ -23,7 +23,7 @@
     </div>
 
 
-    <ion-card  *ngIf=" orderStatus.status == '2'">
+    <ion-card  *ngIf=" orderStatus.status == deliverystatus.agentSet">
       <ion-item class="products">{{prod.name}}
       </ion-item>
       <img  src="{{getimagesrc(prod)}}" />

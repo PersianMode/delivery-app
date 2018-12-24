@@ -44,7 +44,7 @@ export class InternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "InternalAssinedDelivery",
+        type: "InternalAssignedDelivery",
         Full:  this.Full
       }
     }).subscribe(

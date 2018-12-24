@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, Navbar, NavParams } from 'ionic-angular';
 import { HttpService } from '../../services/http.service';
 import { imagePathFixer } from '../../lib/imagePathFixer';
-
+import {ORDER_LINE_STATUS}from '../../lib/order_line_status.enum'
+import {DELIVERY_STATUS}from '../../lib/delivery_status.enum'
 
 @Component({
   selector: 'page-order-details',
@@ -16,10 +17,12 @@ export class OrderDetailsPage implements OnInit {
   productdata = [];
   productIds = [];
   orderStatus = {};
+  orderlinestatus = ORDER_LINE_STATUS
+  deliverystatus = DELIVERY_STATUS
   constructor(public navCtrl: NavController, private navParams: NavParams,
     private httpService: HttpService) {
   }
-  ngOnInit() {
+  ngOnInit() { 
     this.navBar.setBackButtonText("بازگشت");
     this.deliveryDetails = this.navParams.data.delivery;
     this.isDelivered = this.navParams.data.is_delivered || false;
