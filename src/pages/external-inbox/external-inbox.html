@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>صندوق ورودی</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-3>
+        <ion-icon (click)="load()" name="refresh"></ion-icon>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <ion-list class="delivery-list">
+
+    <ion-item *ngFor="let del of deliveryItems">
+
+
+      <div (click)="selectDelivery(del)">
+        <div>
+          <p>فرستنده: {{getSenderName(del)}}</p>
+          <h2>منطقه: {{getSenderDistrict(del)}}</h2>
+          <h3>خیابان: {{getSenderStreet(del)}}</h3>
+        </div>
+        <hr />
+        <div>
+          <p>گیرنده: {{getReceiverName(del)}}</p>
+          <h2>منطقه: {{getReceiverDistrict(del)}}</h2>
+          <h3>خیابان: {{getReceiverStreet(del)}}</h3>
+        </div>
+        <hr />
+        <div style="margin-top: 10px">
+          <h3>نوع انتقال: {{getDeliveryType(del)}}</h3>
+        </div>
+      </div>
+      <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
+
+      <div *ngIf="!del.disabled">
+
+        <button ion-button full *ngIf="!del.selected && !isDeliveryOrdersRequested(del)" (click)="assignDelivery(del)"
+          style="margin-top: 20px">انتخاب ارسال</button>
+
+        <button ion-button full *ngIf="del.selected && isDeliveryOrdersRequested(del)" (click)="startDelivery(del)"
+          style="margin-top: 20px">شروع ارسال</button>
+
+        <button ion-button full *ngIf="del.selected && !isDeliveryOrdersRequested(del)" (click)="requestDeliveryOrders(del)"
+          style="margin-top: 20px">درخواست دریافت مرسوله</button>
+
+        <button ion-button full *ngIf="del.selected && !isDeliveryOrdersRequested(del)" (click)="unassignDelivery(del)"
+          color="danger" style="margin-top: 20px">لغو ارسال</button>
+
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

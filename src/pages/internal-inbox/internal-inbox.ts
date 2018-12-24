@@ -10,10 +10,10 @@ import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
-  selector: 'page-inbox',
-  templateUrl: 'inbox.html',
+  selector: 'page-internal-inbox',
+  templateUrl: 'internal-inbox.html',
 })
-export class InboxPage implements OnInit {
+export class InternalInboxPage implements OnInit {
   deliveryItems = [];
   Full = true;
 
@@ -81,38 +81,18 @@ export class InboxPage implements OnInit {
   }
 
   getDistrict(item) {
-    let district;
-    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
-      district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : '-'
-    } else {
-      district = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
-    }
-    return district;
+    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+
   }
 
   getStreet(item) {
 
-    let street;
-    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
-      street = item.to.customer && item.to.customer._id ? item.to.customer.address.street : '-'
-    } else {
-      street = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
-    }
-    return street.trim();
+    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
   }
 
   getReceiverName(item) {
     let receiver;
-    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
-      receiver = item.to.customer && item.to.customer._id ? this.getConcatinatedName(item.to.customer.first_name, item.to.customer.surname) : '-'
-    } else {
-      receiver = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
-    }
-    return receiver;
-  }
-
-  private getConcatinatedName(name1, name2) {
-    return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
   }
 
   getStartDate(item) {
@@ -228,10 +208,11 @@ export class InboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines);
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(x => x._id));
       })
 
-      if (res.length === totalDeliveryOrderLines.length)
+      res = res.map(x => x.order_line_id);
+      if (res.length === totalDeliveryOrderLines.length && res.every(x => totalDeliveryOrderLines.includes(x)))
         message = 'everything is OK. start scan?'
       else {
         message = `${res.length} of ${totalDeliveryOrderLines.length} is ready. start scan?`
