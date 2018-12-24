@@ -43,8 +43,8 @@ export class InternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "InternalAssinedDelivery",
-        Full:  this.Full
+        type: "InternalAssignedDelivery",
+        Full: this.Full
       }
     }).subscribe(
       res => {
@@ -76,35 +76,66 @@ export class InternalInboxPage implements OnInit {
   }
 
   getDistrict(item) {
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
-
+    try {
+      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getStreet(item) {
 
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+    try {
+      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getReceiverName(item) {
-    let receiver;
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    try {
+      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getStartDate(item) {
-    return moment(item.start).format('YYYY-MM-DD');
+    try {
+      return moment(item.start).format('YYYY-MM-DD');
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getDeliveryType(item) {
-    if (item.from.customer && item.form.customer._id)
-      return 'بازگشت';
-    else if (item.to.customer && item.to.customer._id)
-      return 'ارسال به مشتری';
-    else if (item.to.warehouse_id)
-      return 'داخلی'
+    try {
+      if (item.from.customer && item.form.customer._id)
+        return 'بازگشت';
+      else if (item.to.customer && item.to.customer._id)
+        return 'ارسال به مشتری';
+      else if (item.to.warehouse_id)
+        return 'داخلی'
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   isDeliveryOrdersRequested(item) {
-    return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    try {
+      return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return false;
   }
 
   requestDeliveryOrders() {
@@ -256,8 +287,5 @@ export class InternalInboxPage implements OnInit {
         duration: 2000,
       }).present();
     })
-
-
-
   }
 }

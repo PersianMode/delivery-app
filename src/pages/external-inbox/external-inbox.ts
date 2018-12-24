@@ -43,13 +43,14 @@ export class ExternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "ExternalUnassingedDelivery"
+        type: "ExternalUnassignedDelivery"
       }
     }).subscribe(
       res => {
         this.deliveryItems = res.data;
         this.selectedDelivery = this.deliveryItems.find(x =>
-          x.last_ticket.status === DELIVERY_STATUS.agentSet && x.last_ticket.receiver_id === this.authService.userData.userId
+          (x.last_ticket.status === DELIVERY_STATUS.agentSet || x.last_ticket.status === DELIVERY_STATUS.requestPackage) &&
+          x.last_ticket.receiver_id === this.authService.userData.userId
         );
 
         if (this.selectedDelivery) {
@@ -82,83 +83,136 @@ export class ExternalInboxPage implements OnInit {
 
   getSenderDistrict(item) {
 
-    let from;
-    if (item.from.customer)
-      from = item.from_customer.find(x => x._id === item.from.customer.address_id);
-    else if (item.from.warehouse_id)
-      from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
+    try {
+      let from;
+      if (item.from.customer)
+        from = item.from_customer.find(x => x._id === item.from.customer.address_id);
+      else if (item.from.warehouse_id)
+        from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
 
-    return from.district || '-';
+      return from.district || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getSenderStreet(item) {
-    let from;
-    if (item.from.customer)
-      from = item.from_customer.find(x => x._id === item.from.customer.address_id);
-    else if (item.from.warehouse_id)
-      from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
-
-    return from.street.trim() || '-';
+    try {
+      let from;
+      if (item.from.customer)
+        from = item.from_customer.find(x => x._id === item.from.customer.address_id);
+      else if (item.from.warehouse_id)
+        from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
+  
+      return from.street.trim() || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+    
   }
 
   getSenderName(item) {
-    let sender;
-    if (item.from.customer) {
-      let address = item.from_customer.find(x => x._id === item.from.customer.address_id);
-      sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-    } else if (item.from.warehouse_id)
-      sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
-
-    return sender || '-';
+    try {
+      let sender;
+      if (item.from.customer) {
+        let address = item.from_customer.find(x => x._id === item.from.customer.address_id);
+        sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      } else if (item.from.warehouse_id)
+        sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
+  
+      return sender || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+    
   }
 
 
   getReceiverDistrict(item) {
-    let to;
-    if (item.to.customer)
-      to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-    else if (item.to.warehouse_id)
-      to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-    return to.district || '-';
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+  
+      return to.district || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+    
   }
 
   getReceiverStreet(item) {
-    let to;
-    if (item.to.customer)
-      to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-    else if (item.to.warehouse_id)
-      to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-    return to.street.trim() || '-';
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+  
+      return to.street.trim() || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+    
   }
 
   getReceiverName(item) {
-    let receiver;
-    if (item.to.customer) {
-      let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+    try {
+      let receiver;
+      if (item.to.customer) {
+        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
+        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      }
+      else if (item.to.warehouse_id)
+        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
+  
+      return receiver || '-';
+    } catch (err) {
+      console.log('-> ', err);
     }
-    else if (item.to.warehouse_id)
-      receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
-
-    return receiver || '-';
+    return '-';
+    
   }
 
   private getConcatinatedName(name1, name2) {
-    return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    try {
+      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+    
   }
 
 
   getDeliveryType(item) {
-    if (item.from.customer && item.form.customer._id)
-      return 'بازگشت';
-    else if (item.to.customer && item.to.customer._id)
-      return 'ارسال به مشتری';
+    try {
+      if (item.from.customer && item.form.customer._id)
+        return 'بازگشت';
+      else if (item.to.customer && item.to.customer._id)
+        return 'ارسال به مشتری';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+    
   }
 
   isDeliveryOrdersRequested(item) {
-    return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    try {
+      return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return false;
+    
   }
 
   requestDeliveryOrders() {

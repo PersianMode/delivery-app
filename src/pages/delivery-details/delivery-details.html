@@ -5,46 +5,30 @@
 </ion-header>
 
 <ion-content padding style="direction: rtl">
-  <ion-grid *ngIf="shouldGetEvidence">
-    <ion-row>
-      <ion-col>
-        <button ion-button block (click)="takePhoto()">
-          گرفتن تصویر
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 
   <ion-list>
     <ion-list-header>اطلاعات عمومی</ion-list-header>
     <ion-item>
       <ion-label class="title">نام
-        <span *ngIf="!deliveryDetails.is_return">دریافت کننده</span>
-        <span *ngIf="deliveryDetails.is_return">بازگشت دهنده</span>
+        <span>دریافت کننده</span>
       </ion-label>
       <ion-label class="item-value content">{{getDestinationName()}}</ion-label>
     </ion-item>
     <ion-item>
       <ion-label class="title">شماره
-        <span *ngIf="!deliveryDetails.is_return">دریافت کننده</span>
-        <span *ngIf="deliveryDetails.is_return">بازگشت دهنده</span>
+        <span>دریافت کننده</span>
       </ion-label>
       <ion-label class="item-value content">{{getDestinationPhone()}}</ion-label>
     </ion-item>
     <ion-item>
       <ion-label class="title">نوع</ion-label>
       <ion-label class="item-value content">
-        <span *ngIf="!deliveryDetails.is_return">ارسالی</span>
-        <span *ngIf="deliveryDetails.is_return">بازگشتی</span>
+        <span >{{getDeliveryType()}}</span>
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-label class="title">زمان ارسال</ion-label>
-      <ion-label class="item-value content">{{getStartDateTime()}}</ion-label>
-    </ion-item>
-    <ion-item>
       <ion-label class="title">حداکثر زمان دریافت</ion-label>
-      <ion-label class="item-value content">{{getEndDateTime()}}</ion-label>
+      <ion-label class="item-value content">{{getExpireDateTime()}}</ion-label>
     </ion-item>
     <ion-item *ngIf="isDelivered">
       <ion-label class="title">شروع به ارسال</ion-label>
@@ -56,7 +40,7 @@
     </ion-item>
   </ion-list>
 
-  <div *ngIf="isDelivered && !shouldGetEvidence && deliveryDetails.to.customer._id">
+  <div *ngIf="isDelivered() && deliveryDetails.to.customer._id">
     <img [src]="getEvidenceImage()" />
   </div>
 
@@ -64,14 +48,14 @@
     <ion-list-header>ارسال از</ion-list-header>
     <ion-item *ngFor="let ap of address_parts">
       <ion-label class="title">{{ap.fa_name}}</ion-label>
-      <ion-label class="item-value content">{{getAddressPart('from', ap.name)}}</ion-label>
+      <ion-label class="item-value content">{{getAddressPart(ap.name)}}</ion-label>
     </ion-item>
   </ion-list>
   <ion-list>
     <ion-list-header class="to-part">ارسال به</ion-list-header>
     <ion-item *ngFor="let ap of address_parts">
       <ion-label class="title">{{ap.fa_name}}</ion-label>
-      <ion-label class="item-value content">{{getAddressPart('to', ap.name)}}</ion-label>
+      <ion-label class="item-value content">{{getAddressPart(ap.name, false)}}</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
