@@ -14,6 +14,7 @@ import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 })
 export class InternalInboxPage implements OnInit {
   deliveryItems = [];
+  Full = true;
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
@@ -42,10 +43,12 @@ export class InternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "InternalAssinedDelivery"
+        type: "InternalAssinedDelivery",
+        Full:  this.Full
       }
     }).subscribe(
       res => {
+        console.log('res:', res);
         this.deliveryItems = res.data;
 
         loading.dismiss();
