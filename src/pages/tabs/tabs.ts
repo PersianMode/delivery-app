@@ -4,18 +4,18 @@ import {HistoryPage} from '../history/history';
 import {ProfilePage} from '../profile/profile';
 import {OnDeliveryPage} from '../on-delivery/on-delivery';
 import {NotCompleteDeliveryPage} from '../not-complete-delivery/not-complete-delivery';
-import {UnassignedDeliveriesPage} from '../unassigned-deliveries/unassigned-deliveries';
 import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {InternalInboxPage} from '../internal-inbox/internal-inbox';
+import {ExternalInboxPage} from '../external-inbox/external-inbox';
 
 @Component({
   selector: 'page-tabs',
   templateUrl: 'tabs.html',
 })
 export class TabsPage {
-  unassignedPage = UnassignedDeliveriesPage;
   internalInboxPage = InternalInboxPage;
+  externalInboxPage = ExternalInboxPage;
   historyPage = HistoryPage;
   profilePage = ProfilePage;
   onDeliveryPage = OnDeliveryPage;

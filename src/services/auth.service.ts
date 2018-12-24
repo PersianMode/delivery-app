@@ -60,7 +60,7 @@ export class AuthService {
 
   setUserData(data) {
     this.userData = {
-      userId: data._id,
+      userId: data.id,
       username: data.username,
       name: data.name,
       surname: data.surname,

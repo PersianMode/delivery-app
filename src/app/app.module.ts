@@ -13,6 +13,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {IonicStorageModule} from '@ionic/storage';
 import {TabsPage} from '../pages/tabs/tabs';
 import {InternalInboxPage} from '../pages/internal-inbox/internal-inbox';
+import {ExternalInboxPage} from '../pages/external-inbox/external-inbox';
 import {HistoryPage} from '../pages/history/history';
 import {ProfilePage} from '../pages/profile/profile';
 import {OnDeliveryPage} from '../pages/on-delivery/on-delivery';
@@ -22,7 +23,6 @@ import {File} from '@ionic-native/file';
 import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native/file-transfer';
 import {CallNumber} from '@ionic-native/call-number';
 import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-complete-delivery';
-import {UnassignedDeliveriesPage} from '../pages/unassigned-deliveries/unassigned-deliveries';
 import {WarehouseService} from '../services/warehoues.service';
 import {OrderDetailsPage} from '../pages/order-details/order-details';
 
@@ -32,13 +32,13 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     LoginPage,
     TabsPage,
     InternalInboxPage,
+    ExternalInboxPage,
     HistoryPage,
     ProfilePage,
     OnDeliveryPage,
     OrderDetailsPage,
     DeliveryDetailsPage,
     NotCompleteDeliveryPage,
-    UnassignedDeliveriesPage
   ],
   imports: [
     BrowserModule,
@@ -53,13 +53,13 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     LoginPage,
     TabsPage,
     InternalInboxPage,
+    ExternalInboxPage,
     HistoryPage,
     ProfilePage,
     OnDeliveryPage,
     DeliveryDetailsPage,
     OrderDetailsPage,
     NotCompleteDeliveryPage,
-    UnassignedDeliveriesPage
   ],
   providers: [
     StatusBar,

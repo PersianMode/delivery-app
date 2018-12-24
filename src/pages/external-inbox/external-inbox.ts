@@ -9,12 +9,13 @@ import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 
 @Component({
-  selector: 'page-internal-inbox',
-  templateUrl: 'internal-inbox.html',
+  selector: 'page-external-inbox',
+  templateUrl: 'external-inbox.html',
 })
-export class InternalInboxPage implements OnInit {
+export class ExternalInboxPage implements OnInit {
   deliveryItems = [];
 
+  selectedDelivery: any = null;
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
     private authService: AuthService, private warehouseService: WarehouseService,
@@ -42,12 +43,19 @@ export class InternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "InternalAssinedDelivery"
+        type: "ExternalUnassingedDelivery"
       }
     }).subscribe(
       res => {
         this.deliveryItems = res.data;
+        this.selectedDelivery = this.deliveryItems.find(x =>
+          x.last_ticket.status === DELIVERY_STATUS.agentSet && x.last_ticket.receiver_id === this.authService.userData.userId
+        );
 
+        if (this.selectedDelivery) {
+          this.selectedDelivery.selected = true;
+          this.deliveryItems.filter(x => x._id !== this.selectedDelivery._id).forEach(x => x.disabled = true);
+        }
         loading.dismiss();
       },
       err => {
@@ -72,32 +80,81 @@ export class InternalInboxPage implements OnInit {
 
   }
 
-  getDistrict(item) {
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+  getSenderDistrict(item) {
 
+    let from;
+    if (item.from.customer)
+      from = item.from_customer.find(x => x._id === item.from.customer.address_id);
+    else if (item.from.warehouse_id)
+      from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
+
+    return from.district || '-';
   }
 
-  getStreet(item) {
+  getSenderStreet(item) {
+    let from;
+    if (item.from.customer)
+      from = item.from_customer.find(x => x._id === item.from.customer.address_id);
+    else if (item.from.warehouse_id)
+      from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
 
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+    return from.street.trim() || '-';
+  }
+
+  getSenderName(item) {
+    let sender;
+    if (item.from.customer) {
+      let address = item.from_customer.find(x => x._id === item.from.customer.address_id);
+      sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+    } else if (item.from.warehouse_id)
+      sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
+
+    return sender || '-';
+  }
+
+
+  getReceiverDistrict(item) {
+    let to;
+    if (item.to.customer)
+      to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+    else if (item.to.warehouse_id)
+      to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+
+    return to.district || '-';
+  }
+
+  getReceiverStreet(item) {
+    let to;
+    if (item.to.customer)
+      to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+    else if (item.to.warehouse_id)
+      to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+
+    return to.street.trim() || '-';
   }
 
   getReceiverName(item) {
     let receiver;
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    if (item.to.customer) {
+      let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+    }
+    else if (item.to.warehouse_id)
+      receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
+
+    return receiver || '-';
   }
 
-  getStartDate(item) {
-    return moment(item.start).format('YYYY-MM-DD');
+  private getConcatinatedName(name1, name2) {
+    return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
   }
+
 
   getDeliveryType(item) {
     if (item.from.customer && item.form.customer._id)
       return 'بازگشت';
     else if (item.to.customer && item.to.customer._id)
       return 'ارسال به مشتری';
-    else if (item.to.warehouse_id)
-      return 'داخلی'
   }
 
   isDeliveryOrdersRequested(item) {
@@ -140,11 +197,36 @@ export class InternalInboxPage implements OnInit {
       });
   }
 
+  assignDelivery(delivery) {
 
-  unassignDelivery() {
-    if (!this.deliveryItems.length) {
-      return;
-    }
+    const loading = this.loadingCtrl.create({
+      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+    });
+
+    loading.present();
+
+    this.httpService.post('delivery/agent', {
+      deliveryId: delivery._id
+    }).subscribe(
+      data => {
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'ارسال با موفقت انتخاب شد',
+          duration: 2000,
+        }).present();
+        this.load();
+      },
+      err => {
+        console.error('Error when unassign delivery from current agent: ', err);
+        loading.dismiss();
+        this.toastCtrl.create({
+          message: 'خطا به هنگام انتخاب ارسال. دوباره تلاش کنید',
+          duration: 2000,
+        }).present();
+      });
+  }
+
+  unassignDelivery(delivery) {
 
     const loading = this.loadingCtrl.create({
       content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
@@ -153,7 +235,7 @@ export class InternalInboxPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/unassign', {
-      deliveryId: this.deliveryItems[0]._id
+      deliveryId: delivery._id
     }).subscribe(
       data => {
         loading.dismiss();
@@ -200,11 +282,10 @@ export class InternalInboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(x => x._id));
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_line_ids);
       })
 
-      res = res.map(x => x.order_line_id);
-      if (res.length === totalDeliveryOrderLines.length && res.every(x => totalDeliveryOrderLines.includes(x)))
+      if (res.length === totalDeliveryOrderLines.length)
         message = 'everything is OK. start scan?'
       else {
         message = `${res.length} of ${totalDeliveryOrderLines.length} is ready. start scan?`
