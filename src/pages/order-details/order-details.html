@@ -8,7 +8,7 @@
 
   <div *ngFor="let prod of products">
     <div *ngIf=" orderStatus.status === deliverystatus.requestPackage || orderStatus.status === deliverystatus.started">
-      <ion-card *ngIf="prod.ticket.status == orderlinestatus.FinalCheck">
+      <ion-card *ngIf="prod.ticket.status === orderlinestatus.FinalCheck">
           
       <ion-icon class="ion-icon-inp" ios="ios-time-outline" md="md-time-outline"></ion-icon>
       <div class="products">{{prod.name}}</div>
@@ -23,7 +23,7 @@
     </div>
 
 
-    <ion-card  *ngIf=" orderStatus.status == deliverystatus.agentSet">
+    <ion-card  *ngIf=" orderStatus.status === deliverystatus.agentSet">
       <ion-item class="products">{{prod.name}}
       </ion-item>
       <img  src="{{getimagesrc(prod)}}" />

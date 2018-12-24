@@ -47,10 +47,7 @@ export class OnDeliveryPage implements OnInit {
       }
     }).subscribe(
       res => {
-        console.log('res:', res);
         this.deliveryItems = res.data;
-       
-
         loading.dismiss();
       },
       err => {
