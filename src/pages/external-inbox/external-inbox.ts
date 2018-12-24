@@ -43,7 +43,7 @@ export class ExternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "ExternalUnassingedDelivery"
+        type: "ExternalUnassignedDelivery"
       }
     }).subscribe(
       res => {
