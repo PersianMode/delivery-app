@@ -2,8 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {NavController, Navbar, NavParams, ToastController, LoadingController} from 'ionic-angular';
 import * as moment from 'moment';
 import {HttpService} from '../../services/http.service';
-import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
-import {Camera} from '@ionic-native/camera';
+import {FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
 import {WarehouseService} from '../../services/warehoues.service';
 
 @Component({
