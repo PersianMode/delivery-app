@@ -8,7 +8,7 @@ import {WarehouseService} from '../../services/warehoues.service';
 import * as moment from 'moment';
 import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
 import {Camera} from '@ionic-native/camera';
-
+import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
   selector: 'page-on-delivery',
@@ -26,6 +26,7 @@ export class OnDeliveryPage implements OnInit {
   }
 
   ngOnInit() {
+    
   }
 
   ionViewDidEnter() {
@@ -169,13 +170,17 @@ export class OnDeliveryPage implements OnInit {
   }
 
   showOrderLineDetails(item) {
-
+    this.navCtrl.push(OrderDetailsPage, {
+      delivery: item,
+  
+    });
   }
 
 
   selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
+      
     });
   }
 

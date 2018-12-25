@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 @Injectable()
 export class HttpService {
+  public static PRODUCT_IMAGE_PATH = 'images/product-image';
   // public static Host = 'http://bankofstyle.com';
   // serverAddress: string = 'http://bankofstyle.com/api/';
   public static Host = 'http://localhost:3000';
