@@ -43,7 +43,6 @@ export class OrderDetailsPage implements OnInit {
   ]
 
   constructor(public navCtrl: NavController, private navParams: NavParams,
-    private camera: Camera, private transfer: FileTransfer,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
     private httpService: HttpService, private warehouseService: WarehouseService) {
   }

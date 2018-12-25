@@ -104,13 +104,13 @@ export class ExternalInboxPage implements OnInit {
         from = item.from_customer.find(x => x._id === item.from.customer.address_id);
       else if (item.from.warehouse_id)
         from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
-  
+
       return from.street.trim() || '-';
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
   getSenderName(item) {
@@ -121,13 +121,13 @@ export class ExternalInboxPage implements OnInit {
         sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
       } else if (item.from.warehouse_id)
         sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
-  
+
       return sender || '-';
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
 
@@ -138,13 +138,13 @@ export class ExternalInboxPage implements OnInit {
         to = item.to_customer.find(x => x._id === item.to.customer.address_id);
       else if (item.to.warehouse_id)
         to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-  
+
       return to.district || '-';
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
   getReceiverStreet(item) {
@@ -154,13 +154,13 @@ export class ExternalInboxPage implements OnInit {
         to = item.to_customer.find(x => x._id === item.to.customer.address_id);
       else if (item.to.warehouse_id)
         to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-  
+
       return to.street.trim() || '-';
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
   getReceiverName(item) {
@@ -172,13 +172,13 @@ export class ExternalInboxPage implements OnInit {
       }
       else if (item.to.warehouse_id)
         receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
-  
+
       return receiver || '-';
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
   private getConcatinatedName(name1, name2) {
@@ -188,7 +188,7 @@ export class ExternalInboxPage implements OnInit {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
 
@@ -202,7 +202,7 @@ export class ExternalInboxPage implements OnInit {
       console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
   isDeliveryOrdersRequested(item) {
@@ -212,7 +212,7 @@ export class ExternalInboxPage implements OnInit {
       console.log('-> ', err);
     }
     return false;
-    
+
   }
 
   requestDeliveryOrders() {
@@ -336,16 +336,18 @@ export class ExternalInboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_line_ids);
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(y => y._id));
       })
 
-      if (res.length === totalDeliveryOrderLines.length)
+      let canStart = false;
+      if (res.length === totalDeliveryOrderLines.length) {
         message = 'everything is OK. start scan?'
-      else {
+        canStart = true;
+      } else {
         message = `${res.length} of ${totalDeliveryOrderLines.length} is ready. start scan?`
       }
       let alert = this.alertCtrl.create({
-        title: 'شروع ارسال',
+        title: 'اعلام نتیجه اسکن',
         message,
         buttons: [
           {
@@ -355,26 +357,32 @@ export class ExternalInboxPage implements OnInit {
             }
           },
           {
-            text: 'بله',
+            text: 'شروع؟',
             handler: () => {
-              const loading = this.loadingCtrl.create({
-                content: 'در حال شروع ارسال. لطفا صبر کنید ...'
-              });
-              loading.present();
+              if (canStart) {
+                const loading = this.loadingCtrl.create({
+                  content: 'در حال شروع ارسال. لطفا صبر کنید ...'
+                });
+                loading.present();
 
-              this.httpService.post('delivery/start', {
-                deliveryId: item._id,
-              }).subscribe(res => {
-                loading.dismiss();
-                this.load();
-              }, err => {
-                console.error('Error on start delivery ', err);
-                loading.dismiss();
-                this.toastCtrl.create({
-                  message: 'خطا به هنگام شروع ارسال. دوباره تلاش کنید',
-                  duration: 2000,
-                }).present();
-              });
+                this.httpService.post('delivery/start', {
+                  deliveryId: item._id,
+                }).subscribe(res => {
+                  loading.dismiss();
+                  this.load();
+                }, err => {
+                  console.error('Error on start delivery ', err);
+                  loading.dismiss();
+                  this.toastCtrl.create({
+                    message: 'خطا به هنگام شروع ارسال. دوباره تلاش کنید',
+                    duration: 2000,
+                  }).present();
+                });
+              }else
+              this.toastCtrl.create({
+                message: 'هنوز قادر به شروع ارسال نمی باشید',
+                duration: 2000,
+              }).present();
             }
           }
         ]

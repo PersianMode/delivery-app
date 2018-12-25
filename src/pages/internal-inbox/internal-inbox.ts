@@ -234,7 +234,7 @@ export class InternalInboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(x => x._id));
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(y => y._id));
       })
 
       res = res.map(x => x.order_line_id);
