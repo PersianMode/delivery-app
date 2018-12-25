@@ -7,6 +7,7 @@ import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
+import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
   selector: 'page-internal-inbox',
@@ -43,7 +44,7 @@ export class InternalInboxPage implements OnInit {
       offset: 0,
       limit: 100,
       options: {
-        type: "InternalAssinedDelivery",
+        type: "InternalAssignedDelivery",
         Full:  this.Full
       }
     }).subscribe(
@@ -72,6 +73,10 @@ export class InternalInboxPage implements OnInit {
   }
 
   showOrderLineDetails(item) {
+    this.navCtrl.push(OrderDetailsPage, {
+      delivery: item,
+      is_delivered: false,
+    });
 
   }
 
@@ -103,6 +108,7 @@ export class InternalInboxPage implements OnInit {
       return 'داخلی'
   }
 
+  
   isDeliveryOrdersRequested(item) {
     return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
   }
@@ -112,10 +118,9 @@ export class InternalInboxPage implements OnInit {
       return;
 
     const loading = this.loadingCtrl.create({
-      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
-    });
-
-    loading.present();
+        content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+      });
+      loading.present();
 
     this.httpService.post('delivery/requestPackage', {
       deliveryId: this.deliveryItems[0]._id,
