@@ -22,7 +22,6 @@ import {Camera} from '@ionic-native/camera';
 import {File} from '@ionic-native/file';
 import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native/file-transfer';
 import {CallNumber} from '@ionic-native/call-number';
-import { NotCompleteDeliveryPage } from '../pages/not-complete-delivery/not-complete-delivery';
 import {WarehouseService} from '../services/warehoues.service';
 import {OrderDetailsPage} from '../pages/order-details/order-details';
 
@@ -38,7 +37,6 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     OnDeliveryPage,
     OrderDetailsPage,
     DeliveryDetailsPage,
-    NotCompleteDeliveryPage,
   ],
   imports: [
     BrowserModule,
@@ -59,7 +57,6 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     OnDeliveryPage,
     DeliveryDetailsPage,
     OrderDetailsPage,
-    NotCompleteDeliveryPage,
   ],
   providers: [
     StatusBar,

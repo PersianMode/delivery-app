@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NavController, ToastController, LoadingController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
@@ -45,7 +45,7 @@ export class InternalInboxPage implements OnInit {
       limit: 100,
       options: {
         type: "InternalAssignedDelivery",
-        Full:  this.Full
+        Full: this.Full
       }
     }).subscribe(
       res => {
@@ -74,8 +74,7 @@ export class InternalInboxPage implements OnInit {
 
   showOrderLineDetails(item) {
     this.navCtrl.push(OrderDetailsPage, {
-      delivery: item,
-      is_delivered: false,
+      delivery: item
     });
 
   }
@@ -111,7 +110,8 @@ export class InternalInboxPage implements OnInit {
 
   getStartDate(item) {
     try {
-      return moment(item.start).format('YYYY-MM-DD');
+      if (item.start)
+        return moment(item.start).format('jYYYY-jMM-jDD');
     } catch (err) {
       console.log('-> ', err);
     }
@@ -119,22 +119,8 @@ export class InternalInboxPage implements OnInit {
 
   }
 
-  getDeliveryType(item) {
-    try {
-      if (item.from.customer && item.form.customer._id)
-        return 'بازگشت';
-      else if (item.to.customer && item.to.customer._id)
-        return 'ارسال به مشتری';
-      else if (item.to.warehouse_id)
-        return 'داخلی'
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
 
-  }
 
-  
   isDeliveryOrdersRequested(item) {
     try {
       return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
@@ -149,9 +135,9 @@ export class InternalInboxPage implements OnInit {
       return;
 
     const loading = this.loadingCtrl.create({
-        content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
-      });
-      loading.present();
+      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+    });
+    loading.present();
 
     this.httpService.post('delivery/requestPackage', {
       deliveryId: this.deliveryItems[0]._id,
@@ -166,10 +152,13 @@ export class InternalInboxPage implements OnInit {
       },
       err => {
         console.error('Cannot request for delivery orders: ', err.error);
-
-        let message = err.error = 'selected agent has incomplete delivery' ?
-          'ارسال در حال اجرا هنوز پایان نیافته است' :
-          'خطا در درخواست بسته ارسالی. دوباره تلاش کنید'
+        let message;
+        if (err.error === 'agent has incomplete delivery')
+          message = 'ارسال در حال اجرا هنوز پایان نیافته است';
+        else if (err.error === 'delivery is not started yet')
+          message = 'ارسال هنوز شروع نشده است';
+        else
+          message = 'خطا در درخواست بسته ارسالی. دوباره تلاش کنید';
 
         this.toastCtrl.create({
           message,

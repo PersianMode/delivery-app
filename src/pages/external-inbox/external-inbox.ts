@@ -2,11 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {NavController, ToastController, LoadingController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
-import * as moment from 'moment';
 import {AuthService} from '../../services/auth.service';
-import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
+import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
   selector: 'page-external-inbox',
@@ -78,7 +77,9 @@ export class ExternalInboxPage implements OnInit {
   }
 
   showOrderLineDetails(item) {
-
+    this.navCtrl.push(OrderDetailsPage, {
+      delivery: item,
+    });
   }
 
   getSenderDistrict(item) {
@@ -239,9 +240,13 @@ export class ExternalInboxPage implements OnInit {
       err => {
         console.error('Cannot request for delivery orders: ', err.error);
 
-        let message = err.error = 'selected agent has incomplete delivery' ?
-          'ارسال در حال اجرا هنوز پایان نیافته است' :
-          'خطا در درخواست بسته ارسالی. دوباره تلاش کنید'
+        let message;
+        if (err.error === 'agent has incomplete delivery')
+            message = 'ارسال در حال اجرا هنوز پایان نیافته است';
+        else if (err.error === 'delivery is not started yet')
+          message = 'ارسال هنوز شروع نشده است';
+        else
+          message = 'خطا در درخواست بسته ارسالی. دوباره تلاش کنید';
 
         this.toastCtrl.create({
           message,
@@ -378,11 +383,11 @@ export class ExternalInboxPage implements OnInit {
                     duration: 2000,
                   }).present();
                 });
-              }else
-              this.toastCtrl.create({
-                message: 'هنوز قادر به شروع ارسال نمی باشید',
-                duration: 2000,
-              }).present();
+              } else
+                this.toastCtrl.create({
+                  message: 'هنوز قادر به شروع ارسال نمی باشید',
+                  duration: 2000,
+                }).present();
             }
           }
         ]

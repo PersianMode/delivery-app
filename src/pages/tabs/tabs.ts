@@ -3,7 +3,6 @@ import {NavController} from 'ionic-angular';
 import {HistoryPage} from '../history/history';
 import {ProfilePage} from '../profile/profile';
 import {OnDeliveryPage} from '../on-delivery/on-delivery';
-import {NotCompleteDeliveryPage} from '../not-complete-delivery/not-complete-delivery';
 import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {InternalInboxPage} from '../internal-inbox/internal-inbox';
@@ -19,7 +18,6 @@ export class TabsPage {
   historyPage = HistoryPage;
   profilePage = ProfilePage;
   onDeliveryPage = OnDeliveryPage;
-  notCompletePage = NotCompleteDeliveryPage;
 
   isInternal = true;
 

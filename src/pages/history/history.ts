@@ -3,6 +3,8 @@ import {NavController, ToastController, LoadingController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
+import {WarehouseService} from '../../services/warehoues.service';
+import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
   selector: 'page-history',
@@ -12,66 +14,117 @@ export class HistoryPage implements OnInit {
   deliveredItems = [];
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
-    private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
+    private loadingCtrl: LoadingController, private toastCtrl: ToastController,
+    private warehouseService: WarehouseService) {
   }
 
   ngOnInit() {
   }
 
   ionViewDidEnter() {
-    this.getDeliveredItems();
+    this.load();
   }
 
-  getDeliveredItems() {
+  load() {
     const loading = this.loadingCtrl.create({
-      content: 'در حال دریافت اطلاعات. لطفا صبر کنید ...'
+      content: 'در حال دریافت لیست ارسال های گذشته. لطفا صبر کنید ...'
     });
 
     loading.present();
 
-    this.httpService.post('delivery/agent/items', {
-      // delivery_status: DELIVERY_STATUS.Delivered,
-      is_delivered: true,
-      is_processed: true,      
+    this.httpService.post('search/DeliveryTicket', {
+      offset: 0,
+      limit: 100,
+      options: {
+        type: "AgentFinishedDelivery"
+      }
     }).subscribe(
-      data => {
-        this.deliveredItems = data;
+      res => {
+        this.deliveredItems = res.data;
         loading.dismiss();
       },
       err => {
-        console.error('Cannot fetch delivery items as on delivery items: ', err);
+        console.error('Cannot get delivery box: ', err);
         loading.dismiss();
-
         this.toastCtrl.create({
-          message: 'قادر به دریافت لیست موارد در حال ارسال نیستیم. دوباره تلاش کنید',
+          message: 'خطا در دریافت ارسال های گذشته. دوباره تلاش کنید',
           duration: 3200,
         }).present();
       });
   }
 
   getDistrict(item) {
-    const district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : item.to.warehouse.address.disctrict;
-    return district ? district : '-';
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+
+      return to.district || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getStreet(item) {
-    const street = item.to.customer && item.to.customer._id ? item.to.customer.address.street : item.to.warehouse.address.street;
-    return street && street.trim() ? street : '-';
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+
+      return to.street.trim() || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getReceiverName(item) {
-    const receiverName = item.to.customer && item.to.customer._id ? this.getConcatinatedName(item.to.customer.first_name, item.to.customer.surname) : item.to.warehouse.name;
-    return receiverName && receiverName.trim() ? receiverName : '-';
+    try {
+      let receiver;
+      if (item.to.customer) {
+        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
+        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      }
+      else if (item.to.warehouse_id)
+        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
+
+      return receiver || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   private getConcatinatedName(name1, name2) {
-    return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    try {
+      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
-  viewDetails(item) {
-    this.navCtrl.push(DeliveryDetailsPage, {
+  showOrderLineDetails(item) {
+    this.navCtrl.push(OrderDetailsPage, {
       delivery: item,
-      is_delivered: true,
     });
   }
+
+  selectDelivery(item) {
+
+    this.navCtrl.push(DeliveryDetailsPage, {
+      delivery: item,
+      is_delivered: false,
+    });
+  }
+
 }

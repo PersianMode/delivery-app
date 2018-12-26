@@ -3,9 +3,8 @@ import {NavController, LoadingController, ToastController, AlertController} from
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
 import {CallNumber} from '@ionic-native/call-number';
-import {AuthService} from '../../services/auth.service';
 import {WarehouseService} from '../../services/warehoues.service';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
 import {Camera} from '@ionic-native/camera';
 import {OrderDetailsPage} from '../order-details/order-details';
@@ -26,7 +25,7 @@ export class OnDeliveryPage implements OnInit {
   }
 
   ngOnInit() {
-    
+
   }
 
   ionViewDidEnter() {
@@ -111,68 +110,72 @@ export class OnDeliveryPage implements OnInit {
   }
 
   private getConcatinatedName(name1, name2) {
-    try{
+    try {
       return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
-      
-    }catch(err){
-      console.log('-> ', err ); 
+
+    } catch (err) {
+      console.log('-> ', err);
     }
     return '-';
 
   }
 
   getStartDate(item) {
-    try{
-      return moment(item.start).format('YYYY-MM-DD');
-      
-    }catch(err){
-      console.log('-> ', err ); 
+    try {
+      if (item.start)
+
+        return moment(item.start).format('jYYYY-jMM-jDD');
+
+    } catch (err) {
+      console.log('-> ', err);
     }
     return '-';
 
   }
   getActualStartDate(item) {
-    try{
-      
-      return moment(item.delivery_start).format('YYYY-MM-DD');
-    }catch(err){
-      console.log('-> ', err ); 
+    try {
+      if (item.delivery_start)
+
+        return moment(item.delivery_start).format('jYYYY-jMM-jDD');
+    } catch (err) {
+      console.log('-> ', err);
     }
     return '-';
 
   }
 
   getStartTime(item) {
-    try{
-      return moment(item.delivery_start).format('HH:mm');
-      
-    }catch(err){
-      console.log('-> ', err ); 
+    try {
+      if (item.delivery_start)
+        return moment(item.delivery_start).format('HH:mm');
+
+    } catch (err) {
+      console.log('-> ', err);
     }
     return '-';
 
   }
 
   getDeliveryType(item) {
-    try{
+    try {
       if (item.from.customer && item.form.customer._id)
         return 'بازگشت';
       else if (item.to.customer && item.to.customer._id)
         return 'ارسال به مشتری';
       else if (item.to.warehouse_id)
         return 'داخلی'
-      
-    }catch(err){
-      console.log('-> ', err ); 
+
+    } catch (err) {
+      console.log('-> ', err);
     }
     return '-';
-    
+
   }
 
   showOrderLineDetails(item) {
     this.navCtrl.push(OrderDetailsPage, {
       delivery: item,
-  
+
     });
   }
 
@@ -180,7 +183,7 @@ export class OnDeliveryPage implements OnInit {
   selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
-      
+
     });
   }
 
@@ -234,22 +237,40 @@ export class OnDeliveryPage implements OnInit {
         {
           text: 'بله',
           handler: () => {
-            this.httpService.post('delivery/end', {
-              deliveryId: item._id,
-            }).subscribe(
-              data => {
-                this.toastCtrl.create({
-                  message: 'ارسال به پایان رسید',
-                  duration: 1200,
-                }).present();
-                this.load();
-              },
-              err => {
-                this.toastCtrl.create({
-                  message: 'پایان ارسال با خطا مواجه شد. شاید این ارسال پیشتر به پایان یافته باشد',
-                  duration: 2000,
-                }).present();
-              });
+
+            let action = () => {
+              if (item.to.customer)
+                return this.takePhoto(item);
+              else
+                return Promise.resolve();
+            }
+            action()
+              .then(res => {
+                let waiting = this.loadingCtrl.create({
+                  content: 'در حال پایان ارسال...',
+                });
+                this.httpService.post('delivery/end', {
+                  deliveryId: item._id,
+                }).subscribe(
+                  data => {
+                    this.toastCtrl.create({
+                      message: 'ارسال به پایان رسید',
+                      duration: 1200,
+                    }).present();
+                    waiting.dismiss();
+                    this.load();
+                  },
+                  err => {
+                    waiting.dismiss();
+                    this.toastCtrl.create({
+                      message: 'پایان ارسال با خطا مواجه شد',
+                      duration: 2000,
+                    }).present();
+                  });
+              }).catch(err => {
+                console.error('-> ', err);
+              })
+
           }
         }
       ]
@@ -257,59 +278,57 @@ export class OnDeliveryPage implements OnInit {
 
   }
 
-  takePhoto(delivery) {
+  async takePhoto(delivery) {
+    let waiting;
 
-    var options = {
-      quality: 50,
-      sourceType: this.camera.PictureSourceType.CAMERA,
-      saveToPhotoAlbum: false,
-      correctOrientation: true,
-      encodingType: this.camera.EncodingType.JPEG,
-      destinationType: this.camera.DestinationType.FILE_URI
-    };
+    try {
 
-    this.camera.getPicture(options)
-      .then(imageData => {
-        const fileTransfer: FileTransferObject = this.transfer.create();
-
-        let options: FileUploadOptions = {
-          fileKey: 'file',
-          fileName: 'delivered-evidence.jpeg',
-          chunkedMode: false,
-          mimeType: "image/jpeg",
-          headers: {
-            'token': this.httpService.userToken
-          },
-          params: {
-            '_id': delivery._id,
-            'customer_id': delivery.to.customer._id || delivery.from.customer._id,
-          }
-        };
-
-        const waiting = this.loadingCtrl.create({
-          content: 'در حال بارگذاری تصویر. لطفا صبر کنید ...',
-        });
-
-        waiting.present();
-
-        fileTransfer.upload(imageData, HttpService.Host + '/api/delivery/evidence', options)
-          .then((data) => {
-            waiting.dismiss();
-            this.toastCtrl.create({
-              message: 'تصویر بارگذاری شد',
-              duration: 1200,
-            }).present();
-          })
-          .catch(err => {
-            waiting.dismiss();
-            this.toastCtrl.create({
-              message: 'بارگذاری تصویر به خطا برخورد. دوباره تلاش کنید.',
-              duration: 2000,
-            }).present();
-          });
-      })
-      .catch(err => {
-        console.error('Error: ', err);
+      waiting = this.loadingCtrl.create({
+        content: 'در حال بارگذاری تصویر. لطفا صبر کنید ...',
       });
+
+      let options = {
+        quality: 50,
+        sourceType: this.camera.PictureSourceType.CAMERA,
+        saveToPhotoAlbum: false,
+        correctOrientation: true,
+        encodingType: this.camera.EncodingType.JPEG,
+        destinationType: this.camera.DestinationType.FILE_URI
+      };
+
+      let imageData = await this.camera.getPicture(options)
+      const fileTransfer: FileTransferObject = this.transfer.create();
+
+      let uploadOptions: FileUploadOptions = {
+        fileKey: 'file',
+        fileName: 'delivered-evidence.jpeg',
+        chunkedMode: false,
+        mimeType: "image/jpeg",
+        headers: {
+          'token': this.httpService.userToken
+        },
+        params: {
+          '_id': delivery._id,
+          'customer_id': delivery.to.customer._id || delivery.from.customer._id,
+        }
+      };
+
+      waiting.present();
+
+      await fileTransfer.upload(imageData, HttpService.Host + '/api/delivery/evidence', uploadOptions)
+      waiting.dismiss();
+      this.toastCtrl.create({
+        message: 'تصویر بارگذاری شد',
+        duration: 1200,
+      }).present();
+    } catch (err) {
+      console.log('-> ', err);
+      waiting.dismiss();
+      this.toastCtrl.create({
+        message: 'بارگذاری تصویر به خطا برخورد. دوباره تلاش کنید.',
+        duration: 2000,
+      }).present();
+    }
+
   }
 }

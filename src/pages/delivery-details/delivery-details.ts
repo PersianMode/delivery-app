@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {NavController, Navbar, NavParams} from 'ionic-angular';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {HttpService} from '../../services/http.service';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
@@ -47,7 +47,7 @@ export class DeliveryDetailsPage implements OnInit {
   to_address: any;
 
   constructor(public navCtrl: NavController, private navParams: NavParams,
-   private warehouseService: WarehouseService) {
+    private warehouseService: WarehouseService) {
   }
 
   ngOnInit() {
@@ -150,7 +150,8 @@ export class DeliveryDetailsPage implements OnInit {
 
   getStartDateTime() {
     try {
-      return moment(this.delivery.start).format('YYYY-MM-DD HH:mm');
+      if (this.delivery.start)
+        return moment(this.delivery.start).format('jYYYY-jMM-jDD HH:mm');
     } catch (err) {
       console.log('-> ', err);
     }
@@ -158,7 +159,9 @@ export class DeliveryDetailsPage implements OnInit {
 
   getExpireDateTime() {
     try {
-      return moment(this.delivery.expire_date).format('YYYY-MM-DD HH:mm');
+      if (this.delivery.expire_date)
+
+        return moment(this.delivery.expire_date).format('jYYYY-jMM-jDD HH:mm');
     } catch (err) {
       console.log('-> ', err);
     }
@@ -166,7 +169,9 @@ export class DeliveryDetailsPage implements OnInit {
 
   getDeliveryStartDateTime() {
     try {
-      return moment(this.delivery.delivery_start).format('YYYY-MM-DD HH:mm');
+      if (this.delivery.delivery_start)
+
+        return moment(this.delivery.delivery_start).format('jYYYY-jMM-jDD HH:mm');
     } catch (err) {
       console.log('-> ', err);
     }
@@ -176,7 +181,8 @@ export class DeliveryDetailsPage implements OnInit {
 
   getDeliveryEndDateTime() {
     try {
-      return moment(this.delivery.delivery_end).format('YYYY-MM-DD HH:mm');
+      if (this.delivery.delivery_end)
+        return moment(this.delivery.delivery_end).format('jYYYY-jMM-jDD HH:mm');
     } catch (err) {
       console.log('-> ', err);
     }
@@ -209,5 +215,5 @@ export class DeliveryDetailsPage implements OnInit {
 
   }
 
- 
+
 }
