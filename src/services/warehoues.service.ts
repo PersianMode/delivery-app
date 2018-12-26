@@ -21,7 +21,7 @@ export class WarehouseService {
     })
   }
 
-  getWarehouse(id) {
+   getWarehouse(id) {
     return this.warehouses.find(x => x._id === id);
   }
 

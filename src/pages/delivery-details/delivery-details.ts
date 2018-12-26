@@ -1,10 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {NavController, Navbar, NavParams, ToastController, LoadingController} from 'ionic-angular';
-import * as moment from 'moment';
+import {NavController, Navbar, NavParams} from 'ionic-angular';
+import * as moment from 'jalali-moment';
 import {HttpService} from '../../services/http.service';
-import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
-import {Camera} from '@ionic-native/camera';
 import {WarehouseService} from '../../services/warehoues.service';
+import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 
 @Component({
   selector: 'page-delivery-details',
@@ -12,9 +11,7 @@ import {WarehouseService} from '../../services/warehoues.service';
 })
 export class DeliveryDetailsPage implements OnInit {
   @ViewChild(Navbar) navBar: Navbar;
-  deliveryDetails = null;
-  isDelivered = false;
-  shouldGetEvidence = false;
+  delivery = null;
   address_parts = [
     {
       name: 'province',
@@ -40,138 +37,183 @@ export class DeliveryDetailsPage implements OnInit {
       name: 'unit',
       fa_name: 'واحد',
     },
+    {
+      name: 'postal_code',
+      fa_name: 'واحد',
+    },
   ]
 
+  from_address: any;
+  to_address: any;
+
   constructor(public navCtrl: NavController, private navParams: NavParams,
-    private camera: Camera, private transfer: FileTransfer,
-    private toastCtrl: ToastController, private loadingCtrl: LoadingController,
-    private httpService: HttpService, private warehouseService: WarehouseService) {
+    private warehouseService: WarehouseService) {
   }
 
   ngOnInit() {
-    this.navBar.setBackButtonText("بازگشت");
-    this.deliveryDetails = this.navParams.data.delivery;
-    this.isDelivered = this.navParams.data.is_delivered || false;
-    this.shouldGetEvidence = this.navParams.data.get_evidence || false;
+    try {
+
+      this.navBar.setBackButtonText("بازگشت");
+      this.delivery = this.navParams.data.delivery;
+
+      if (this.delivery) {
+        if (this.delivery.from.customer && this.delivery.from.customer._id && this.delivery.from.customer.address_id && this.delivery.from_customer) {
+          this.from_address = this.delivery.from_customer.find(x => x._id === this.delivery.from.customer.address_id);
+
+        } else if (this.delivery.to.customer && this.delivery.to.customer._id && this.delivery.to.customer.address_id && this.delivery.to_customer) {
+          this.to_address = this.delivery.to_customer.find(x => x._id === this.delivery.to.customer.address_id);
+
+        } else if (this.delivery.from.warehouse_id) {
+          let warehouse = this.warehouseService.getWarehouse(this.delivery.from.warehouse_id);
+          if (warehouse && warehouse.address)
+            this.from_address = warehouse.address;
+
+        } else if (this.delivery.to.warehouse_id) {
+          let warehouse = this.warehouseService.getWarehouse(this.delivery.to.warehouse_id);
+          if (warehouse && warehouse.address)
+            this.to_address = warehouse.address;
+        }
+      }
+    } catch (err) {
+      console.log('-> ', err);
+    }
 
   }
 
-  getAddressPart(direction, part) {
+  isDelivered() {
+    try {
 
-    const where = direction.toLowerCase() === 'from' ?
-      (this.deliveryDetails.is_return ? 'customer' : 'warehouse') :
-      (this.deliveryDetails.to.customer_id ? 'customer' : 'warehouse');
+      return this.delivery.tickets[this.delivery.tickets.length - 1].status === DELIVERY_STATUS.ended;
 
+    } catch (err) {
+      console.log('-> ', err);
+    }
+  }
 
-    if (where === 'customer')
-      return this.deliveryDetails[direction]['customer'].address[part];
+  getAddressPart(name, from = true) {
+    try {
 
-    else if (where === 'warehouse')
-      return this.warehouseService.getWarehouse(this.deliveryDetails[direction]['warehouse_id']).address[part];
+      if (from && this.from_address)
+        return this.from_address[name] ? this.from_address[name] : '-';
+
+      if (!from && this.to_address)
+        return this.to_address[name] ? this.to_address[name] : '-';
+
+      if (from && this.delivery.from.warehouse_id) {
+        let warehouse = this.warehouseService.getWarehouse(this.delivery.from.warehouse_id);
+        return warehouse.address[name];
+      }
+      if (!from && this.delivery.to.warehouse_id) {
+        let warehouse = this.warehouseService.getWarehouse(this.delivery.to.warehouse_id);
+        return warehouse.address[name];
+      }
+    } catch (err) {
+      console.log('-> ', err);
+    }
+
+    return '-';
+
   }
 
   getDestinationName() {
-
-    if (this.deliveryDetails.is_return) {
-      return this.warehouseService.getWarehouse(this.deliveryDetails.to.warehouse_id).name;
-    } else {
-      if (this.deliveryDetails.to.customer_id)
-        return this.deliveryDetails.to.customer.address.recipient_name + ' ' + this.deliveryDetails.to.customer.address.recipient_surname;
-      else if (this.deliveryDetails.to.warehouse_id)
-        return this.warehouseService.getWarehouse(this.deliveryDetails.to.warehouse_id).name;
+    try {
+      if (this.delivery.to.warehouse_id)
+        return this.warehouseService.getWarehouse(this.delivery.to.warehoues_id).name;
+      else if (this.delivery.to.customer && this.to_address)
+        return this.getConcatinatedName(this.to_address.recipient_name, this.to_address.recipient_surname);
+    } catch (err) {
+      console.log('-> ', err);
     }
+  }
+
+  private getConcatinatedName(name1, name2) {
+    try {
+      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getDestinationPhone() {
-
-    let phone;
-    if (this.deliveryDetails.is_return) {
-      phone = this.warehouseService.getWarehouse(this.deliveryDetails.to.warehouse_id).name;
-    } else {
-      if (this.deliveryDetails.to.customer_id)
-        phone = this.deliveryDetails.to.customer.address.recipient_mobile_no;
-      else if (this.deliveryDetails.to.warehouse_id)
-        phone = this.warehouseService.getWarehouse(this.deliveryDetails.to.warehouse_id).phone;
+    try {
+      if (this.delivery.to.warehouse_id)
+        return this.warehouseService.getWarehouse(this.delivery.to.warehoues_id).phone;
+      else if (this.delivery.to.customer && this.to_address)
+        return this.to_address.recipient_mobile_no;
+    } catch (err) {
+      console.log('-> ', err);
     }
 
-    return phone ? phone : '-';
   }
 
   getStartDateTime() {
-    return moment(this.deliveryDetails.start).format('YYYY-MM-DD HH:mm');
+    try {
+      if (this.delivery.start)
+        return moment(this.delivery.start).format('jYYYY-jMM-jDD HH:mm');
+    } catch (err) {
+      console.log('-> ', err);
+    }
   }
 
-  getEndDateTime() {
-    return moment(this.deliveryDetails.end).format('YYYY-MM-DD HH:mm');
+  getExpireDateTime() {
+    try {
+      if (this.delivery.expire_date)
+
+        return moment(this.delivery.expire_date).format('jYYYY-jMM-jDD HH:mm');
+    } catch (err) {
+      console.log('-> ', err);
+    }
   }
 
   getDeliveryStartDateTime() {
-    return moment(this.deliveryDetails.delivery_start).format('YYYY-MM-DD HH:mm');
+    try {
+      if (this.delivery.delivery_start)
+
+        return moment(this.delivery.delivery_start).format('jYYYY-jMM-jDD HH:mm');
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getDeliveryEndDateTime() {
-    return moment(this.deliveryDetails.delivery_end).format('YYYY-MM-DD HH:mm');
+    try {
+      if (this.delivery.delivery_end)
+        return moment(this.delivery.delivery_end).format('jYYYY-jMM-jDD HH:mm');
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getEvidenceImage() {
-    return HttpService.Host + this.deliveryDetails.delivered_evidence;
+    try {
+
+      if (this.delivery.to.customer)
+        return HttpService.Host + this.delivery.delivered_evidence;
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
   }
 
-  takePhoto(st) {
-    if (!this.shouldGetEvidence)
-      return;
+  getDeliveryType() {
+    try {
+      if (this.delivery.from.customer && this.delivery.form.customer._id)
+        return 'بازگشت';
+      else if (this.delivery.to.customer && this.delivery.to.customer._id)
+        return 'ارسال به مشتری';
+      else if (this.delivery.to.warehoues_id)
+        return 'انتقال داخلی';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
 
-    var options = {
-      quality: 50,
-      sourceType: st ? st : this.camera.PictureSourceType.CAMERA,
-      saveToPhotoAlbum: false,
-      correctOrientation: true,
-      encodingType: this.camera.EncodingType.JPEG,
-      destinationType: this.camera.DestinationType.FILE_URI
-    };
-
-    this.camera.getPicture(options)
-      .then(imageData => {
-        const fileTransfer: FileTransferObject = this.transfer.create();
-
-        let options: FileUploadOptions = {
-          fileKey: 'file',
-          fileName: 'delivered-evidence.jpeg',
-          chunkedMode: false,
-          mimeType: "image/jpeg",
-          headers: {
-            'token': this.httpService.userToken
-          },
-          params: {
-            '_id': this.deliveryDetails._id,
-            'customer_id': this.deliveryDetails.to.customer._id || this.deliveryDetails.from.customer._id,
-          }
-        };
-
-        const waiting = this.loadingCtrl.create({
-          content: 'در حال بارگذاری تصویر. لطفا صبر کنید ...',
-        });
-
-        waiting.present();
-
-        fileTransfer.upload(imageData, HttpService.Host + '/api/delivery/evidence', options)
-          .then((data) => {
-            waiting.dismiss();
-            this.toastCtrl.create({
-              message: 'تصویر بارگذاری شد',
-              duration: 1200,
-            }).present();
-          })
-          .catch(err => {
-            waiting.dismiss();
-            this.toastCtrl.create({
-              message: 'بارگذاری تصویر به خطا برخورد. دوباره تلاش کنید.',
-              duration: 2000,
-            }).present();
-          });
-      })
-      .catch(err => {
-        console.error('Error: ', err);
-      });
   }
+
+
 }

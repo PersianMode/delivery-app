@@ -8,18 +8,20 @@
   <ion-grid>
     <ion-row>
       <ion-col>
-        <ion-icon (click)="getDeliveredItems()" name="refresh"></ion-icon>
+        <ion-icon (click)="load()" name="refresh"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-grid>
 
   <ion-list class="delivery-list">
-    <ion-item *ngFor="let del of deliveredItems" (tap)="viewDetails(del)">
-      <div class="inner-item">
+    <ion-item *ngFor="let del of deliveredItems">
+      <div class="inner-item" (click)="selectDelivery(del)">
         <h2>منطقه: {{getDistrict(del)}}</h2>
         <h3>خیابان: {{getStreet(del)}}</h3>
         <p>تحویل گیرنده: {{getReceiverName(del)}}</p>
       </div>
+      <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
     </ion-item>
+
   </ion-list>
 </ion-content>

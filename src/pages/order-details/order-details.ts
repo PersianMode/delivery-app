@@ -25,7 +25,6 @@ export class OrderDetailsPage implements OnInit {
   ngOnInit() { 
     this.navBar.setBackButtonText("بازگشت");
     this.deliveryDetails = this.navParams.data.delivery;
-    this.isDelivered = this.navParams.data.is_delivered || false;
      this.productdata = this.deliveryDetails.order_details.flatMap(each => each.order_lines).map(each => {
       return {
         productId: each.product_id,

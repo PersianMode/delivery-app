@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {NavController, LoadingController, ToastController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
-import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
 import {CallNumber} from '@ionic-native/call-number';
-import {AuthService} from '../../services/auth.service';
 import {WarehouseService} from '../../services/warehoues.service';
-import {LOGIN_TYPE} from '../../lib/login_type.enum';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
+import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
+import {Camera} from '@ionic-native/camera';
 import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
@@ -20,12 +19,13 @@ export class OnDeliveryPage implements OnInit {
   constructor(
     private callNumber: CallNumber, public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
-    private authService: AuthService, private warehouseService: WarehouseService,
+    private camera: Camera, private transfer: FileTransfer,
+    private warehouseService: WarehouseService,
     private alertCtrl: AlertController) {
   }
 
   ngOnInit() {
-    
+
   }
 
   ionViewDidEnter() {
@@ -61,64 +61,121 @@ export class OnDeliveryPage implements OnInit {
   }
 
   getDistrict(item) {
-    let district;
-    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
-      district = item.to.customer && item.to.customer._id ? item.to.customer.address.district : '-'
-    } else {
-      district = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+
+      return to.district || '-';
+    } catch (err) {
+      console.log('-> ', err);
     }
-    return district;
+    return '-';
+
   }
 
   getStreet(item) {
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
 
-    let street;
-    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
-      street = item.to.customer && item.to.customer._id ? item.to.customer.address.street : '-'
-    } else {
-      street = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+      return to.street.trim() || '-';
+    } catch (err) {
+      console.log('-> ', err);
     }
-    return street.trim();
+    return '-';
+
   }
 
   getReceiverName(item) {
-    let receiver;
-    if (this.authService.userData.access_level === LOGIN_TYPE.DeliveryAgent) {
-      receiver = item.to.customer && item.to.customer._id ? this.getConcatinatedName(item.to.customer.first_name, item.to.customer.surname) : '-'
-    } else {
-      receiver = item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    try {
+      let receiver;
+      if (item.to.customer) {
+        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
+        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      }
+      else if (item.to.warehouse_id)
+        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
+
+      return receiver || '-';
+    } catch (err) {
+      console.log('-> ', err);
     }
-    return receiver;
+    return '-';
   }
 
   private getConcatinatedName(name1, name2) {
-    return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    try {
+      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getStartDate(item) {
-    return moment(item.start).format('YYYY-MM-DD');
+    try {
+      if (item.start)
+
+        return moment(item.start).format('jYYYY-jMM-jDD');
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
   getActualStartDate(item) {
-    return moment(item.delivery_start).format('YYYY-MM-DD');
+    try {
+      if (item.delivery_start)
+
+        return moment(item.delivery_start).format('jYYYY-jMM-jDD');
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getStartTime(item) {
-    return moment(item.delivery_start).format('HH:mm');
+    try {
+      if (item.delivery_start)
+        return moment(item.delivery_start).format('HH:mm');
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getDeliveryType(item) {
-    if (item.from.customer && item.form.customer._id)
-      return 'بازگشت';
-    else if (item.to.customer && item.to.customer._id)
-      return 'ارسال به مشتری';
-    else if (item.to.warehouse_id)
-      return 'داخلی'
+    try {
+      if (item.from.customer && item.form.customer._id)
+        return 'بازگشت';
+      else if (item.to.customer && item.to.customer._id)
+        return 'ارسال به مشتری';
+      else if (item.to.warehouse_id)
+        return 'داخلی'
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   showOrderLineDetails(item) {
     this.navCtrl.push(OrderDetailsPage, {
       delivery: item,
-  
+
     });
   }
 
@@ -126,7 +183,7 @@ export class OnDeliveryPage implements OnInit {
   selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
-      
+
     });
   }
 
@@ -138,7 +195,6 @@ export class OnDeliveryPage implements OnInit {
     else {
 
       phoneNumber = this.warehouseService.getWarehouse(item.to.warehouse_id).phone || '';
-
     }
 
     if (phoneNumber)
@@ -181,25 +237,98 @@ export class OnDeliveryPage implements OnInit {
         {
           text: 'بله',
           handler: () => {
-            this.httpService.post('delivery/end', {
-              deliveryId: item._id,
-            }).subscribe(
-              data => {
-                this.toastCtrl.create({
-                  message: 'ارسال به پایان رسید',
-                  duration: 1200,
-                }).present();
-                this.load();
-              },
-              err => {
-                this.toastCtrl.create({
-                  message: 'پایان ارسال با خطا مواجه شد. شاید این ارسال پیشتر به پایان یافته باشد',
-                  duration: 2000,
-                }).present();
-              });
+
+            let action = () => {
+              if (item.to.customer)
+                return this.takePhoto(item);
+              else
+                return Promise.resolve();
+            }
+            action()
+              .then(res => {
+                let waiting = this.loadingCtrl.create({
+                  content: 'در حال پایان ارسال...',
+                });
+                this.httpService.post('delivery/end', {
+                  deliveryId: item._id,
+                }).subscribe(
+                  data => {
+                    this.toastCtrl.create({
+                      message: 'ارسال به پایان رسید',
+                      duration: 1200,
+                    }).present();
+                    waiting.dismiss();
+                    this.load();
+                  },
+                  err => {
+                    waiting.dismiss();
+                    this.toastCtrl.create({
+                      message: 'پایان ارسال با خطا مواجه شد',
+                      duration: 2000,
+                    }).present();
+                  });
+              }).catch(err => {
+                console.error('-> ', err);
+              })
+
           }
         }
       ]
     }).present();
+
+  }
+
+  async takePhoto(delivery) {
+    let waiting;
+
+    try {
+
+      waiting = this.loadingCtrl.create({
+        content: 'در حال بارگذاری تصویر. لطفا صبر کنید ...',
+      });
+
+      let options = {
+        quality: 50,
+        sourceType: this.camera.PictureSourceType.CAMERA,
+        saveToPhotoAlbum: false,
+        correctOrientation: true,
+        encodingType: this.camera.EncodingType.JPEG,
+        destinationType: this.camera.DestinationType.FILE_URI
+      };
+
+      let imageData = await this.camera.getPicture(options)
+      const fileTransfer: FileTransferObject = this.transfer.create();
+
+      let uploadOptions: FileUploadOptions = {
+        fileKey: 'file',
+        fileName: 'delivered-evidence.jpeg',
+        chunkedMode: false,
+        mimeType: "image/jpeg",
+        headers: {
+          'token': this.httpService.userToken
+        },
+        params: {
+          '_id': delivery._id,
+          'customer_id': delivery.to.customer._id || delivery.from.customer._id,
+        }
+      };
+
+      waiting.present();
+
+      await fileTransfer.upload(imageData, HttpService.Host + '/api/delivery/evidence', uploadOptions)
+      waiting.dismiss();
+      this.toastCtrl.create({
+        message: 'تصویر بارگذاری شد',
+        duration: 1200,
+      }).present();
+    } catch (err) {
+      console.log('-> ', err);
+      waiting.dismiss();
+      this.toastCtrl.create({
+        message: 'بارگذاری تصویر به خطا برخورد. دوباره تلاش کنید.',
+        duration: 2000,
+      }).present();
+    }
+
   }
 }

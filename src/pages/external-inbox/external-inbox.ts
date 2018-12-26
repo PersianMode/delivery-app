@@ -2,11 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {NavController, ToastController, LoadingController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
-import * as moment from 'moment';
 import {AuthService} from '../../services/auth.service';
-import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
+import {OrderDetailsPage} from '../order-details/order-details';
 
 @Component({
   selector: 'page-external-inbox',
@@ -49,7 +48,8 @@ export class ExternalInboxPage implements OnInit {
       res => {
         this.deliveryItems = res.data;
         this.selectedDelivery = this.deliveryItems.find(x =>
-          x.last_ticket.status === DELIVERY_STATUS.agentSet && x.last_ticket.receiver_id === this.authService.userData.userId
+          (x.last_ticket.status === DELIVERY_STATUS.agentSet || x.last_ticket.status === DELIVERY_STATUS.requestPackage) &&
+          x.last_ticket.receiver_id === this.authService.userData.userId
         );
 
         if (this.selectedDelivery) {
@@ -77,88 +77,143 @@ export class ExternalInboxPage implements OnInit {
   }
 
   showOrderLineDetails(item) {
-
+    this.navCtrl.push(OrderDetailsPage, {
+      delivery: item,
+    });
   }
 
   getSenderDistrict(item) {
 
-    let from;
-    if (item.from.customer)
-      from = item.from_customer.find(x => x._id === item.from.customer.address_id);
-    else if (item.from.warehouse_id)
-      from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
+    try {
+      let from;
+      if (item.from.customer)
+        from = item.from_customer.find(x => x._id === item.from.customer.address_id);
+      else if (item.from.warehouse_id)
+        from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
 
-    return from.district || '-';
+      return from.district || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getSenderStreet(item) {
-    let from;
-    if (item.from.customer)
-      from = item.from_customer.find(x => x._id === item.from.customer.address_id);
-    else if (item.from.warehouse_id)
-      from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
+    try {
+      let from;
+      if (item.from.customer)
+        from = item.from_customer.find(x => x._id === item.from.customer.address_id);
+      else if (item.from.warehouse_id)
+        from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
 
-    return from.street.trim() || '-';
+      return from.street.trim() || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getSenderName(item) {
-    let sender;
-    if (item.from.customer) {
-      let address = item.from_customer.find(x => x._id === item.from.customer.address_id);
-      sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-    } else if (item.from.warehouse_id)
-      sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
+    try {
+      let sender;
+      if (item.from.customer) {
+        let address = item.from_customer.find(x => x._id === item.from.customer.address_id);
+        sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      } else if (item.from.warehouse_id)
+        sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
 
-    return sender || '-';
+      return sender || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
 
   getReceiverDistrict(item) {
-    let to;
-    if (item.to.customer)
-      to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-    else if (item.to.warehouse_id)
-      to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
 
-    return to.district || '-';
+      return to.district || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getReceiverStreet(item) {
-    let to;
-    if (item.to.customer)
-      to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-    else if (item.to.warehouse_id)
-      to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+    try {
+      let to;
+      if (item.to.customer)
+        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
+      else if (item.to.warehouse_id)
+        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
 
-    return to.street.trim() || '-';
+      return to.street.trim() || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getReceiverName(item) {
-    let receiver;
-    if (item.to.customer) {
-      let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-    }
-    else if (item.to.warehouse_id)
-      receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
+    try {
+      let receiver;
+      if (item.to.customer) {
+        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
+        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      }
+      else if (item.to.warehouse_id)
+        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
 
-    return receiver || '-';
+      return receiver || '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   private getConcatinatedName(name1, name2) {
-    return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    try {
+      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
 
   getDeliveryType(item) {
-    if (item.from.customer && item.form.customer._id)
-      return 'بازگشت';
-    else if (item.to.customer && item.to.customer._id)
-      return 'ارسال به مشتری';
+    try {
+      if (item.from.customer && item.form.customer._id)
+        return 'بازگشت';
+      else if (item.to.customer && item.to.customer._id)
+        return 'ارسال به مشتری';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   isDeliveryOrdersRequested(item) {
-    return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    try {
+      return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return false;
+
   }
 
   requestDeliveryOrders() {
@@ -185,9 +240,13 @@ export class ExternalInboxPage implements OnInit {
       err => {
         console.error('Cannot request for delivery orders: ', err.error);
 
-        let message = err.error = 'selected agent has incomplete delivery' ?
-          'ارسال در حال اجرا هنوز پایان نیافته است' :
-          'خطا در درخواست بسته ارسالی. دوباره تلاش کنید'
+        let message;
+        if (err.error === 'agent has incomplete delivery')
+            message = 'ارسال در حال اجرا هنوز پایان نیافته است';
+        else if (err.error === 'delivery is not started yet')
+          message = 'ارسال هنوز شروع نشده است';
+        else
+          message = 'خطا در درخواست بسته ارسالی. دوباره تلاش کنید';
 
         this.toastCtrl.create({
           message,
@@ -282,16 +341,18 @@ export class ExternalInboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_line_ids);
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(y => y._id));
       })
 
-      if (res.length === totalDeliveryOrderLines.length)
+      let canStart = false;
+      if (res.length === totalDeliveryOrderLines.length) {
         message = 'everything is OK. start scan?'
-      else {
+        canStart = true;
+      } else {
         message = `${res.length} of ${totalDeliveryOrderLines.length} is ready. start scan?`
       }
       let alert = this.alertCtrl.create({
-        title: 'شروع ارسال',
+        title: 'اعلام نتیجه اسکن',
         message,
         buttons: [
           {
@@ -301,26 +362,32 @@ export class ExternalInboxPage implements OnInit {
             }
           },
           {
-            text: 'بله',
+            text: 'شروع؟',
             handler: () => {
-              const loading = this.loadingCtrl.create({
-                content: 'در حال شروع ارسال. لطفا صبر کنید ...'
-              });
-              loading.present();
+              if (canStart) {
+                const loading = this.loadingCtrl.create({
+                  content: 'در حال شروع ارسال. لطفا صبر کنید ...'
+                });
+                loading.present();
 
-              this.httpService.post('delivery/start', {
-                deliveryId: item._id,
-              }).subscribe(res => {
-                loading.dismiss();
-                this.load();
-              }, err => {
-                console.error('Error on start delivery ', err);
-                loading.dismiss();
+                this.httpService.post('delivery/start', {
+                  deliveryId: item._id,
+                }).subscribe(res => {
+                  loading.dismiss();
+                  this.load();
+                }, err => {
+                  console.error('Error on start delivery ', err);
+                  loading.dismiss();
+                  this.toastCtrl.create({
+                    message: 'خطا به هنگام شروع ارسال. دوباره تلاش کنید',
+                    duration: 2000,
+                  }).present();
+                });
+              } else
                 this.toastCtrl.create({
-                  message: 'خطا به هنگام شروع ارسال. دوباره تلاش کنید',
+                  message: 'هنوز قادر به شروع ارسال نمی باشید',
                   duration: 2000,
                 }).present();
-              });
             }
           }
         ]

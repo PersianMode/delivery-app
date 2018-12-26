@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NavController, ToastController, LoadingController, AlertController} from 'ionic-angular';
 import {HttpService} from '../../services/http.service';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
-import * as moment from 'moment';
+import * as moment from 'jalali-moment';
 import {AuthService} from '../../services/auth.service';
 import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
@@ -45,7 +45,7 @@ export class InternalInboxPage implements OnInit {
       limit: 100,
       options: {
         type: "InternalAssignedDelivery",
-        Full:  this.Full
+        Full: this.Full
       }
     }).subscribe(
       res => {
@@ -74,43 +74,60 @@ export class InternalInboxPage implements OnInit {
 
   showOrderLineDetails(item) {
     this.navCtrl.push(OrderDetailsPage, {
-      delivery: item,
-      is_delivered: false,
+      delivery: item
     });
 
   }
 
   getDistrict(item) {
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
-
+    try {
+      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getStreet(item) {
 
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+    try {
+      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
   getReceiverName(item) {
-    let receiver;
-    return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    try {
+      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   getStartDate(item) {
-    return moment(item.start).format('YYYY-MM-DD');
+    try {
+      if (item.start)
+        return moment(item.start).format('jYYYY-jMM-jDD');
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
   }
 
-  getDeliveryType(item) {
-    if (item.from.customer && item.form.customer._id)
-      return 'بازگشت';
-    else if (item.to.customer && item.to.customer._id)
-      return 'ارسال به مشتری';
-    else if (item.to.warehouse_id)
-      return 'داخلی'
-  }
 
-  
+
   isDeliveryOrdersRequested(item) {
-    return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    try {
+      return item.last_ticket.status === DELIVERY_STATUS.requestPackage;
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return false;
   }
 
   requestDeliveryOrders() {
@@ -118,9 +135,9 @@ export class InternalInboxPage implements OnInit {
       return;
 
     const loading = this.loadingCtrl.create({
-        content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
-      });
-      loading.present();
+      content: 'در حال اعمال تغیرات. لطفا صبر کنید ...'
+    });
+    loading.present();
 
     this.httpService.post('delivery/requestPackage', {
       deliveryId: this.deliveryItems[0]._id,
@@ -135,10 +152,13 @@ export class InternalInboxPage implements OnInit {
       },
       err => {
         console.error('Cannot request for delivery orders: ', err.error);
-
-        let message = err.error = 'selected agent has incomplete delivery' ?
-          'ارسال در حال اجرا هنوز پایان نیافته است' :
-          'خطا در درخواست بسته ارسالی. دوباره تلاش کنید'
+        let message;
+        if (err.error === 'agent has incomplete delivery')
+          message = 'ارسال در حال اجرا هنوز پایان نیافته است';
+        else if (err.error === 'delivery is not started yet')
+          message = 'ارسال هنوز شروع نشده است';
+        else
+          message = 'خطا در درخواست بسته ارسالی. دوباره تلاش کنید';
 
         this.toastCtrl.create({
           message,
@@ -208,7 +228,7 @@ export class InternalInboxPage implements OnInit {
 
       let totalDeliveryOrderLines = [];
       this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(x => x._id));
+        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(y => y._id));
       })
 
       res = res.map(x => x.order_line_id);
@@ -261,8 +281,5 @@ export class InternalInboxPage implements OnInit {
         duration: 2000,
       }).present();
     })
-
-
-
   }
 }
