@@ -339,10 +339,7 @@ export class ExternalInboxPage implements OnInit {
 
       let message;
 
-      let totalDeliveryOrderLines = [];
-      this.deliveryItems[0].order_details.forEach(x => {
-        totalDeliveryOrderLines = totalDeliveryOrderLines.concat(x.order_lines.map(y => y._id));
-      })
+      let totalDeliveryOrderLines = this.deliveryItems[0].order_details.map(x => x.order_line_ids);
 
       let canStart = false;
       if (res.length === totalDeliveryOrderLines.length) {
