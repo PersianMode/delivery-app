@@ -25,13 +25,13 @@ export class OrderDetailsPage implements OnInit {
   ngOnInit() { 
     this.navBar.setBackButtonText("بازگشت");
     this.deliveryDetails = this.navParams.data.delivery;
-     this.productdata = this.deliveryDetails.order_details.flatMap(each => each.order_lines).map(each => {
+     this.productdata = this.deliveryDetails.order_lines.map(each => {
       return {
-        productId: each.product_id,
+        productId: each.instance.product_id,
         productTicket: each.tickets[each.tickets.length - 1]
       }
     })
-    this.productIds = this.deliveryDetails.order_details.flatMap(each => each.order_lines).map(each => each.product_id)
+    this.productIds = this.deliveryDetails.order_lines.map(each => each.instance.product_id)
     this.orderStatus = this.deliveryDetails.last_ticket
     this.loadProducts(this.productIds)
   }
