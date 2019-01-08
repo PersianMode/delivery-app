@@ -14,7 +14,7 @@
     </ion-item>
     <ion-item>
       <ion-label>نوع کاربری</ion-label>
-      <ion-select [(ngModel)]="loginType">
+      <ion-select [(ngModel)]="loginType" class="login-type">
         <ion-option [value]="lt?.InternalDeliveryAgent">مسئول ارسال د اخلی</ion-option>
         <ion-option [value]="lt?.DeliveryAgent">مسئول ارسال به مشتری</ion-option>
       </ion-select>
