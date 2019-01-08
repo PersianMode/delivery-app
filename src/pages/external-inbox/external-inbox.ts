@@ -216,7 +216,7 @@ export class ExternalInboxPage implements OnInit {
 
   }
 
-  requestDeliveryOrders() {
+  requestDeliveryOrders(del) {
     if (!this.deliveryItems.length)
       return;
 
@@ -227,7 +227,7 @@ export class ExternalInboxPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/requestPackage', {
-      deliveryId: this.deliveryItems[0]._id,
+      deliveryId: del._id,
     }).subscribe(
       data => {
         loading.dismiss();
@@ -339,7 +339,7 @@ export class ExternalInboxPage implements OnInit {
 
       let message;
 
-      let totalDeliveryOrderLines = this.deliveryItems[0].order_details.map(x => x.order_line_ids);
+      let totalDeliveryOrderLines = item.order_details.map(x => x.order_line_ids);
 
       let canStart = false;
       if (res.length === totalDeliveryOrderLines.length) {
