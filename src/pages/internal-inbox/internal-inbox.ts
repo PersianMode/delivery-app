@@ -130,7 +130,7 @@ export class InternalInboxPage implements OnInit {
     return false;
   }
 
-  requestDeliveryOrders() {
+  requestDeliveryOrders(del) {
     if (!this.deliveryItems.length)
       return;
 
@@ -140,7 +140,7 @@ export class InternalInboxPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/requestPackage', {
-      deliveryId: this.deliveryItems[0]._id,
+      deliveryId: del._id,
     }).subscribe(
       data => {
         loading.dismiss();
@@ -169,7 +169,7 @@ export class InternalInboxPage implements OnInit {
   }
 
 
-  unassignDelivery() {
+  unassignDelivery(del) {
     if (!this.deliveryItems.length) {
       return;
     }
@@ -181,7 +181,7 @@ export class InternalInboxPage implements OnInit {
     loading.present();
 
     this.httpService.post('delivery/unassign', {
-      deliveryId: this.deliveryItems[0]._id
+      deliveryId: del._id
     }).subscribe(
       data => {
         loading.dismiss();
@@ -226,7 +226,7 @@ export class InternalInboxPage implements OnInit {
 
       let message;
 
-      let totalDeliveryOrderLines = this.deliveryItems[0].order_details.map(x => x.order_line_ids);
+      let totalDeliveryOrderLines = item.order_details.map(x => x.order_line_ids);
 
       res = res.map(x => x.order_line_id);
       if (res.length === totalDeliveryOrderLines.length && res.every(x => totalDeliveryOrderLines.includes(x)))
