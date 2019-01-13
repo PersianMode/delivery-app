@@ -5,6 +5,7 @@ import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {DeliveryDetailsPage} from '../delivery-details/delivery-details';
 import {WarehouseService} from '../../services/warehoues.service';
 import {OrderDetailsPage} from '../order-details/order-details';
+import {AddressService} from '../../services/address.service';
 
 @Component({
   selector: 'page-history',
@@ -15,7 +16,7 @@ export class HistoryPage implements OnInit {
 
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private loadingCtrl: LoadingController, private toastCtrl: ToastController,
-    private warehouseService: WarehouseService) {
+    private warehouseService: WarehouseService, private addressService: AddressService) {
   }
 
   ngOnInit() {
@@ -53,55 +54,35 @@ export class HistoryPage implements OnInit {
       });
   }
 
-  getDistrict(item) {
+  getAddressPart(item, isReceiver = false, part) {
+
     try {
-      let to;
-      if (item.to.customer)
-        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      else if (item.to.warehouse_id)
-        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-      return to.district || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
-
-  getStreet(item) {
-    try {
-      let to;
-      if (item.to.customer)
-        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      else if (item.to.warehouse_id)
-        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-      return to.street.trim() || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
-
-  getReceiverName(item) {
-    try {
-      let receiver;
-      if (item.to.customer) {
-        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
-        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-      }
-      else if (item.to.warehouse_id)
-        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
-
-      return receiver || '-';
+      let address = this.addressService.getAddress(item, isReceiver);
+      return address[part].trim();
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
   }
 
+
+
+  getName(item, isReceiver = false) {
+    try {
+      let sender;
+      if (item.from.customer) {
+        let address = this.addressService.getAddress(item, isReceiver);
+        sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      } else if (item.from.warehouse_id)
+        sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
+
+      return sender;
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
+  }
   private getConcatinatedName(name1, name2) {
     try {
       return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
