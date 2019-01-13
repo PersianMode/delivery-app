@@ -40,7 +40,7 @@ export class DeliveryDetailsPage implements OnInit {
     },
     {
       name: 'postal_code',
-      fa_name: 'واحد',
+      fa_name: 'کد پستی',
     },
   ]
 
@@ -187,21 +187,10 @@ export class DeliveryDetailsPage implements OnInit {
       console.log('-> ', err);
     }
   }
-
-  getDeliveryType() {
-    try {
-      if (this.delivery.from.customer)
-        return 'بازگشت';
-      else if (this.delivery.to.customer)
-        return 'ارسال به مشتری';
-      else if (this.delivery.to.warehoues_id)
-        return 'انتقال داخلی';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
+  getDeliveryType(item) {
+    return this.addressService.getDeliveryType(item);  
   }
+
 
 
 }

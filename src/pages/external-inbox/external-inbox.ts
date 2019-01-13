@@ -126,17 +126,9 @@ export class ExternalInboxPage implements OnInit {
 
 
   getDeliveryType(item) {
-    try {
-      if (item.from.customer && item.form.customer._id)
-        return 'بازگشت';
-      else if (item.to.customer && item.to.customer._id)
-        return 'ارسال به مشتری';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
+    return this.addressService.getDeliveryType(item);  
   }
+
 
   isDeliveryOrdersRequested(item) {
     try {

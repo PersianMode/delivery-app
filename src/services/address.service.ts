@@ -35,6 +35,23 @@ export class AddressService {
     }
   }
 
+  
+  getDeliveryType(delivery) {
+    try {
+      if (delivery.from.customer)
+        return 'بازگشت';
+      else if (delivery.to.customer)
+        return 'ارسال به مشتری';
+      else if (delivery.to.warehouse_id)
+        return 'داخلی'
+
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+
+  }
+
 
 
 }

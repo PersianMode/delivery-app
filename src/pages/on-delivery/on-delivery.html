@@ -18,8 +18,8 @@
       <ion-item>
         <div (click)="selectDelivery(del)">
           <div>
-            <h2>منطقه: {{getDistrict(del, true, 'district')}}</h2>
-            <h3>خیابان: {{getStreet(del, true, 'street')}}</h3>
+            <h2>منطقه: {{getAddressPart(del, true, 'district')}}</h2>
+            <h3>خیابان: {{getAddressPart(del, true, 'street')}}</h3>
             <p>تحویل گیرنده: {{getName(del, true)}}</p>
           </div>
           <div style="margin-top: 10px">
