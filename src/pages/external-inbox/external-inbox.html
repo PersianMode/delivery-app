@@ -21,15 +21,15 @@
 
       <div (click)="selectDelivery(del)">
         <div>
-          <p>فرستنده: {{getSenderName(del)}}</p>
-          <h2>منطقه: {{getSenderDistrict(del)}}</h2>
-          <h3>خیابان: {{getSenderStreet(del)}}</h3>
+          <p>فرستنده: {{getName(del, false)}}</p>
+          <h2>منطقه: {{getDistrict(del, false, 'district')}}</h2>
+          <h3>خیابان: {{getStreet(del, false, 'street')}}</h3>
         </div>
         <hr />
         <div>
-          <p>گیرنده: {{getReceiverName(del)}}</p>
-          <h2>منطقه: {{getReceiverDistrict(del)}}</h2>
-          <h3>خیابان: {{getReceiverStreet(del)}}</h3>
+          <p>گیرنده: {{getName(del, true)}}</p>
+          <h2>منطقه: {{getDistrict(del, true, 'district')}}</h2>
+          <h3>خیابان: {{getStreet(del, true, 'street')}}</h3>
         </div>
         <hr />
         <div style="margin-top: 10px">

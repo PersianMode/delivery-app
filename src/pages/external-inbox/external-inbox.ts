@@ -6,6 +6,7 @@ import {AuthService} from '../../services/auth.service';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {OrderDetailsPage} from '../order-details/order-details';
+import {AddressService} from '../../services/address.service';
 
 @Component({
   selector: 'page-external-inbox',
@@ -18,7 +19,7 @@ export class ExternalInboxPage implements OnInit {
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
     private authService: AuthService, private warehouseService: WarehouseService,
-    private alertCtrl: AlertController) {
+    private alertCtrl: AlertController, private addressService: AddressService) {
   }
 
   ngOnInit() {
@@ -82,48 +83,29 @@ export class ExternalInboxPage implements OnInit {
     });
   }
 
-  getSenderDistrict(item) {
+  getAddressPart(item, isReceiver = false, part) {
 
     try {
-      let from;
-      if (item.from.customer)
-        from = item.from_customer.find(x => x._id === item.from.customer.address_id);
-      else if (item.from.warehouse_id)
-        from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
-
-      return from.district || '-';
+      let address = this.addressService.getAddress(item, isReceiver);
+      return address[part].trim();
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
   }
 
-  getSenderStreet(item) {
-    try {
-      let from;
-      if (item.from.customer)
-        from = item.from_customer.find(x => x._id === item.from.customer.address_id);
-      else if (item.from.warehouse_id)
-        from = this.warehouseService.getWarehouse(item.from.warehouse_id).address;
 
-      return from.street.trim() || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
 
-  }
-
-  getSenderName(item) {
+  getName(item, isReceiver = false) {
     try {
       let sender;
       if (item.from.customer) {
-        let address = item.from_customer.find(x => x._id === item.from.customer.address_id);
+        let address = this.addressService.getAddress(item, isReceiver);
         sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
       } else if (item.from.warehouse_id)
         sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
 
-      return sender || '-';
+      return sender;
     } catch (err) {
       console.log('-> ', err);
     }
@@ -131,56 +113,6 @@ export class ExternalInboxPage implements OnInit {
 
   }
 
-
-  getReceiverDistrict(item) {
-    try {
-      let to;
-      if (item.to.customer)
-        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      else if (item.to.warehouse_id)
-        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-      return to.district || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
-
-  getReceiverStreet(item) {
-    try {
-      let to;
-      if (item.to.customer)
-        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      else if (item.to.warehouse_id)
-        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-      return to.street.trim() || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
-
-  getReceiverName(item) {
-    try {
-      let receiver;
-      if (item.to.customer) {
-        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
-        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-      }
-      else if (item.to.warehouse_id)
-        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
-
-      return receiver || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
 
   private getConcatinatedName(name1, name2) {
     try {
@@ -242,7 +174,7 @@ export class ExternalInboxPage implements OnInit {
 
         let message;
         if (err.error === 'agent has incomplete delivery')
-            message = 'ارسال در حال اجرا هنوز پایان نیافته است';
+          message = 'ارسال در حال اجرا هنوز پایان نیافته است';
         else if (err.error === 'delivery is not started yet')
           message = 'ارسال هنوز شروع نشده است';
         else

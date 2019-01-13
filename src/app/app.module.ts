@@ -24,6 +24,7 @@ import {FileTransfer, FileUploadOptions, FileTransferObject} from '@ionic-native
 import {CallNumber} from '@ionic-native/call-number';
 import {WarehouseService} from '../services/warehoues.service';
 import {OrderDetailsPage} from '../pages/order-details/order-details';
+import {AddressService} from '../services/address.service';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import {OrderDetailsPage} from '../pages/order-details/order-details';
     AuthService,
     HttpService,
     WarehouseService,
+    AddressService,
     Camera,
     File,
     FileTransfer,

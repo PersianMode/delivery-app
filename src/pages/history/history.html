@@ -16,9 +16,9 @@
   <ion-list class="delivery-list">
     <ion-item *ngFor="let del of deliveredItems">
       <div class="inner-item" (click)="selectDelivery(del)">
-        <h2>منطقه: {{getDistrict(del)}}</h2>
-        <h3>خیابان: {{getStreet(del)}}</h3>
-        <p>تحویل گیرنده: {{getReceiverName(del)}}</p>
+        <h2>منطقه: {{getDistrict(del, true, 'district')}}</h2>
+        <h3>خیابان: {{getStreet(del, true, 'street')}}</h3>
+        <p>تحویل گیرنده: {{getName(del, true)}}</p>
       </div>
       <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
     </ion-item>
