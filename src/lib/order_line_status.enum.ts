@@ -12,7 +12,7 @@ export enum ORDER_LINE_STATUS  {
   FinalCheck = 11,
   Checked = 12,
   NotExists = 13,
-  Return = 14,
+  ReturnRequested = 14,
   CancelRequested = 15,
   StoreCancel = 16,
   Renew = 17,
