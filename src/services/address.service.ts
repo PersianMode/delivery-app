@@ -31,7 +31,6 @@ export class AddressService {
 
 
     } catch (err) {
-      console.log('-> error on parsing address', err);
     }
   }
 

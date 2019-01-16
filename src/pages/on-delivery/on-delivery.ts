@@ -67,7 +67,6 @@ export class OnDeliveryPage implements OnInit {
       let address = this.addressService.getAddress(item, isReceiver);
       return address[part].trim();
     } catch (err) {
-      console.log('-> ', err);
     }
     return '-';
   }

@@ -96,7 +96,6 @@ export class DeliveryDetailsPage implements OnInit {
         return warehouse.address[name];
       }
     } catch (err) {
-      console.log('-> ', err);
     }
 
     return '-';
