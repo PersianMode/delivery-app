@@ -15,24 +15,24 @@
 
   <ion-list class="delivery-list">
     <ion-item-sliding *ngFor="let del of deliveryItems">
-      <ion-item >
+      <ion-item>
         <div (click)="selectDelivery(del)">
-            <div>
-                <h2>منطقه: {{getDistrict(del)}}</h2>
-                <h3>خیابان: {{getStreet(del)}}</h3>
-                <p>تحویل گیرنده: {{getReceiverName(del)}}</p>
-              </div>
-              <div style="margin-top: 10px">
-                <h3>تاریخ پیش بینی شده شروع: {{getStartDate(del)}}</h3>
-                <h3>تاریخ پیش واقعی شروع: {{getActualStartDate(del)}}</h3>
-                <h3>ساعت شروع: {{getStartTime(del)}}</h3>
-              </div>
-              <div style="margin-top: 10px">
-                <h3>نوع انتقال: {{getDeliveryType(del)}}</h3>
-              </div>
+          <div>
+            <h2>منطقه: {{getAddressPart(del, true, 'district')}}</h2>
+            <h3>خیابان: {{getAddressPart(del, true, 'street')}}</h3>
+            <p>تحویل گیرنده: {{getName(del, true)}}</p>
+          </div>
+          <div style="margin-top: 10px">
+            <h3>تاریخ پیش بینی شده شروع: {{getStartDate(del)}}</h3>
+            <h3>تاریخ پیش واقعی شروع: {{getActualStartDate(del)}}</h3>
+            <h3>ساعت شروع: {{getStartTime(del)}}</h3>
+          </div>
+          <div style="margin-top: 10px">
+            <h3>نوع انتقال: {{getDeliveryType(del)}}</h3>
+          </div>
         </div>
         <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
-    
+
       </ion-item>
 
       <ion-item-options side="right">

@@ -8,6 +8,7 @@ import * as moment from 'jalali-moment';
 import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer';
 import {Camera} from '@ionic-native/camera';
 import {OrderDetailsPage} from '../order-details/order-details';
+import {AddressService} from '../../services/address.service';
 
 @Component({
   selector: 'page-on-delivery',
@@ -21,7 +22,7 @@ export class OnDeliveryPage implements OnInit {
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
     private camera: Camera, private transfer: FileTransfer,
     private warehouseService: WarehouseService,
-    private alertCtrl: AlertController) {
+    private alertCtrl: AlertController, private addressService: AddressService) {
   }
 
   ngOnInit() {
@@ -60,55 +61,34 @@ export class OnDeliveryPage implements OnInit {
       });
   }
 
-  getDistrict(item) {
-    try {
-      let to;
-      if (item.to.customer)
-        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      else if (item.to.warehouse_id)
-        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
+  getAddressPart(item, isReceiver = false, part) {
 
-      return to.district || '-';
+    try {
+      let address = this.addressService.getAddress(item, isReceiver);
+      return address[part].trim();
+    } catch (err) {
+    }
+    return '-';
+  }
+
+
+
+  getName(item, isReceiver = false) {
+    try {
+      let sender;
+      if (item.from.customer) {
+        let address = this.addressService.getAddress(item, isReceiver);
+        sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
+      } else if (item.from.warehouse_id)
+        sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
+
+      return sender;
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
 
   }
-
-  getStreet(item) {
-    try {
-      let to;
-      if (item.to.customer)
-        to = item.to_customer.find(x => x._id === item.to.customer.address_id);
-      else if (item.to.warehouse_id)
-        to = this.warehouseService.getWarehouse(item.to.warehouse_id).address;
-
-      return to.street.trim() || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
-
-  getReceiverName(item) {
-    try {
-      let receiver;
-      if (item.to.customer) {
-        let address = item.to_customer.find(x => x._id === item.to.customer.address_id);
-        receiver = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-      }
-      else if (item.to.warehouse_id)
-        receiver = this.warehouseService.getWarehouse(item.to.warehouse_id).name;
-
-      return receiver || '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-  }
-
   private getConcatinatedName(name1, name2) {
     try {
       return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
@@ -157,19 +137,7 @@ export class OnDeliveryPage implements OnInit {
   }
 
   getDeliveryType(item) {
-    try {
-      if (item.from.customer && item.form.customer._id)
-        return 'بازگشت';
-      else if (item.to.customer && item.to.customer._id)
-        return 'ارسال به مشتری';
-      else if (item.to.warehouse_id)
-        return 'داخلی'
-
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
+    return this.addressService.getDeliveryType(item);  
   }
 
   showOrderLineDetails(item) {

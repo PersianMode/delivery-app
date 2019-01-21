@@ -8,6 +8,7 @@ import {LOGIN_TYPE} from '../../lib/login_type.enum';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
 import {OrderDetailsPage} from '../order-details/order-details';
+import {AddressService} from '../../services/address.service';
 
 @Component({
   selector: 'page-internal-inbox',
@@ -20,7 +21,7 @@ export class InternalInboxPage implements OnInit {
   constructor(public navCtrl: NavController, private httpService: HttpService,
     private toastCtrl: ToastController, private loadingCtrl: LoadingController,
     private authService: AuthService, private warehouseService: WarehouseService,
-    private alertCtrl: AlertController) {
+    private alertCtrl: AlertController, private addressService: AddressService) {
   }
 
   ngOnInit() {
@@ -79,33 +80,26 @@ export class InternalInboxPage implements OnInit {
 
   }
 
-  getDistrict(item) {
+  getAddressPart(item, isReceiver = false, part) {
+
     try {
-      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.district : '-';
+      let address = this.addressService.getAddress(item, isReceiver);
+      return address[part].trim();
     } catch (err) {
-      console.log('-> ', err);
     }
     return '-';
   }
 
-  getStreet(item) {
 
+
+  getName(item) {
     try {
-      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).address.street : '-';
+      return this.warehouseService.getWarehouse(item.from.warehouse_id).name;
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
 
-  }
-
-  getReceiverName(item) {
-    try {
-      return item.to.warehouse_id ? this.warehouseService.getWarehouse(item.to.warehouse_id).name : '-';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
   }
 
   getStartDate(item) {

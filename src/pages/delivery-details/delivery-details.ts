@@ -4,6 +4,7 @@ import * as moment from 'jalali-moment';
 import {HttpService} from '../../services/http.service';
 import {WarehouseService} from '../../services/warehoues.service';
 import {DELIVERY_STATUS} from '../../lib/delivery_status.enum';
+import {AddressService} from '../../services/address.service';
 
 @Component({
   selector: 'page-delivery-details',
@@ -39,7 +40,7 @@ export class DeliveryDetailsPage implements OnInit {
     },
     {
       name: 'postal_code',
-      fa_name: 'واحد',
+      fa_name: 'کد پستی',
     },
   ]
 
@@ -47,7 +48,8 @@ export class DeliveryDetailsPage implements OnInit {
   to_address: any;
 
   constructor(public navCtrl: NavController, private navParams: NavParams,
-    private warehouseService: WarehouseService) {
+    private warehouseService: WarehouseService,
+    private addressService: AddressService) {
   }
 
   ngOnInit() {
@@ -57,22 +59,8 @@ export class DeliveryDetailsPage implements OnInit {
       this.delivery = this.navParams.data.delivery;
 
       if (this.delivery) {
-        if (this.delivery.from.customer && this.delivery.from.customer._id && this.delivery.from.customer.address_id && this.delivery.from_customer) {
-          this.from_address = this.delivery.from_customer.find(x => x._id === this.delivery.from.customer.address_id);
-
-        } else if (this.delivery.to.customer && this.delivery.to.customer._id && this.delivery.to.customer.address_id && this.delivery.to_customer) {
-          this.to_address = this.delivery.to_customer.find(x => x._id === this.delivery.to.customer.address_id);
-
-        } else if (this.delivery.from.warehouse_id) {
-          let warehouse = this.warehouseService.getWarehouse(this.delivery.from.warehouse_id);
-          if (warehouse && warehouse.address)
-            this.from_address = warehouse.address;
-
-        } else if (this.delivery.to.warehouse_id) {
-          let warehouse = this.warehouseService.getWarehouse(this.delivery.to.warehouse_id);
-          if (warehouse && warehouse.address)
-            this.to_address = warehouse.address;
-        }
+        this.from_address = this.addressService.getAddress(this.delivery, false);
+        this.to_address = this.addressService.getAddress(this.delivery, true);
       }
     } catch (err) {
       console.log('-> ', err);
@@ -108,7 +96,6 @@ export class DeliveryDetailsPage implements OnInit {
         return warehouse.address[name];
       }
     } catch (err) {
-      console.log('-> ', err);
     }
 
     return '-';
@@ -199,21 +186,10 @@ export class DeliveryDetailsPage implements OnInit {
       console.log('-> ', err);
     }
   }
-
-  getDeliveryType() {
-    try {
-      if (this.delivery.from.customer && this.delivery.form.customer._id)
-        return 'بازگشت';
-      else if (this.delivery.to.customer && this.delivery.to.customer._id)
-        return 'ارسال به مشتری';
-      else if (this.delivery.to.warehoues_id)
-        return 'انتقال داخلی';
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
+  getDeliveryType(item) {
+    return this.addressService.getDeliveryType(item);  
   }
+
 
 
 }
