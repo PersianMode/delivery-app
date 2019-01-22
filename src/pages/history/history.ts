@@ -68,30 +68,14 @@ export class HistoryPage implements OnInit {
 
   getName(item, isReceiver = false) {
     try {
-      let sender;
-      if (item.from.customer) {
-        let address = this.addressService.getAddress(item, isReceiver);
-        sender = this.getConcatinatedName(address.recipient_name, address.recipient_surname);
-      } else if (item.from.warehouse_id)
-        sender = this.warehouseService.getWarehouse(item.from.warehouse_id).name;
-
-      return sender;
+      return this.addressService.getName(item, isReceiver)
     } catch (err) {
       console.log('-> ', err);
     }
     return '-';
 
   }
-  private getConcatinatedName(name1, name2) {
-    try {
-      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
-
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
+\
 
   showOrderLineDetails(item) {
     this.navCtrl.push(OrderDetailsPage, {
