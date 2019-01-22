@@ -113,15 +113,6 @@ export class DeliveryDetailsPage implements OnInit {
     }
   }
 
-  private getConcatinatedName(name1, name2) {
-    try {
-      return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
-    } catch (err) {
-      console.log('-> ', err);
-    }
-    return '-';
-
-  }
 
   getDestinationPhone() {
     try {
