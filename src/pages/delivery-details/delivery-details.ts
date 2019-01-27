@@ -107,7 +107,7 @@ export class DeliveryDetailsPage implements OnInit {
       if (this.delivery.to.warehouse_id)
         return this.warehouseService.getWarehouse(this.delivery.to.warehoues_id).name;
       else if (this.delivery.to.customer && this.to_address)
-        return this.getConcatinatedName(this.to_address.recipient_name, this.to_address.recipient_surname);
+        return this.addressService.getConcatinatedName(this.to_address.recipient_name, this.to_address.recipient_surname);
     } catch (err) {
       console.log('-> ', err);
     }

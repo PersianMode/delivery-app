@@ -71,7 +71,7 @@ export class AddressService {
 
   }
   
-  private getConcatinatedName(name1, name2) {
+  public getConcatinatedName(name1, name2) {
     try {
       return name1 && name2 ? name1 + ' - ' + name2 : (name1 ? name1 : name2);
 
