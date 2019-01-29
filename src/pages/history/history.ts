@@ -75,7 +75,6 @@ export class HistoryPage implements OnInit {
     return '-';
 
   }
-\
 
   showOrderLineDetails(item) {
     this.navCtrl.push(OrderDetailsPage, {
