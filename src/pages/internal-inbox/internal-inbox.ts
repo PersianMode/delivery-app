@@ -94,7 +94,7 @@ export class InternalInboxPage implements OnInit {
 
   getName(item) {
     try {
-      return this.warehouseService.getWarehouse(item.from.warehouse_id).name;
+      return this.addressService.getName(item)
     } catch (err) {
       console.log('-> ', err);
     }

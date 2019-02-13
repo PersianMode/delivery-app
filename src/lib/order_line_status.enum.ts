@@ -1,4 +1,4 @@
-export enum ORDER_LINE_STATUS  {
+export enum ORDER_LINE_STATUS {
   default = 1,
   WaitForOnlineWarehouse = 2,
   WaitForOnlineWarehouseCancel = 3,
@@ -13,8 +13,8 @@ export enum ORDER_LINE_STATUS  {
   Checked = 12,
   NotExists = 13,
   ReturnRequested = 14,
-  CancelRequested = 15,
-  StoreCancel = 16,
-  Renew = 17,
-  Canceled = 18
-  };
+  StoreCancel = 15,
+  Renew = 16,
+  Canceled = 17,
+  Damaged = 18
+};
