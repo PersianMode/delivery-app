@@ -30,6 +30,7 @@
           <p>گیرنده: {{getName(del, true)}}</p>
           <h2>منطقه: {{getAddressPart(del, true, 'district')}}</h2>
           <h3>خیابان: {{getAddressPart(del, true, 'street')}}</h3>
+          <p>بازه زمانی انتخاب شده توسط کاربر جهت تحویل بسته: {{getTimeSlot(del).time_slot.lower_bound}} تا {{getTimeSlot(del).time_slot.upper_bound}}</p>
         </div>
         <hr />
         <div style="margin-top: 10px">
