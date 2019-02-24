@@ -13,8 +13,12 @@ export enum ORDER_LINE_STATUS {
   Checked = 12,
   NotExists = 13,
   ReturnRequested = 14,
-  StoreCancel = 15,
-  Renew = 16,
+  WaitForLost = 15,
+  LostVerified= 16,
   Canceled = 17,
-  Damaged = 18
+  WaitForDamageWithoutRefund = 18,
+  DamageWithoutRefundVerified = 19,
+  WaitForDamageWithRefund = 20,
+  DamageWithRefundVerified = 21,
+  Renew = 22,
 };
