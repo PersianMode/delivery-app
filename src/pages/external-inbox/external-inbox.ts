@@ -14,12 +14,13 @@ import {AddressService} from '../../services/address.service';
 })
 export class ExternalInboxPage implements OnInit {
   deliveryItems = [];
+  slot = null;
 
   selectedDelivery: any = null;
   constructor(public navCtrl: NavController, private httpService: HttpService,
-    private toastCtrl: ToastController, private loadingCtrl: LoadingController,
-    private authService: AuthService, private warehouseService: WarehouseService,
-    private alertCtrl: AlertController, private addressService: AddressService) {
+              private toastCtrl: ToastController, private loadingCtrl: LoadingController,
+              private authService: AuthService, private warehouseService: WarehouseService,
+              private alertCtrl: AlertController, private addressService: AddressService) {
   }
 
   ngOnInit() {
@@ -69,8 +70,16 @@ export class ExternalInboxPage implements OnInit {
       });
   }
 
-  selectDelivery(item) {
+  getTimeSlot(item) {
+    try {
+      return this.addressService.getTimeSlot(item);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+  }
 
+  selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
       is_delivered: false,
@@ -84,7 +93,6 @@ export class ExternalInboxPage implements OnInit {
   }
 
   getAddressPart(item, isReceiver = false, part) {
-
     try {
       let address = this.addressService.getAddress(item, isReceiver);
       return address[part].trim();
@@ -92,8 +100,6 @@ export class ExternalInboxPage implements OnInit {
     }
     return '-';
   }
-
-
 
   getName(item, isReceiver = false) {
     try {
@@ -105,14 +111,9 @@ export class ExternalInboxPage implements OnInit {
 
   }
 
-
-
-
-
   getDeliveryType(item) {
-    return this.addressService.getDeliveryType(item);  
+    return this.addressService.getDeliveryType(item);
   }
-
 
   isDeliveryOrdersRequested(item) {
     try {
@@ -306,8 +307,6 @@ export class ExternalInboxPage implements OnInit {
         duration: 2000,
       }).present();
     })
-
-
 
   }
 }

@@ -70,7 +70,6 @@ export class DeliveryDetailsPage implements OnInit {
 
   isDelivered() {
     try {
-
       return this.delivery.tickets[this.delivery.tickets.length - 1].status === DELIVERY_STATUS.ended;
 
     } catch (err) {
@@ -135,6 +134,15 @@ export class DeliveryDetailsPage implements OnInit {
     }
   }
 
+  getTimeSlot() {
+    try {
+      return this.addressService.getTimeSlot(this.delivery);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+  }
+
   getExpireDateTime() {
     try {
       if (this.delivery.expire_date)
@@ -177,10 +185,9 @@ export class DeliveryDetailsPage implements OnInit {
       console.log('-> ', err);
     }
   }
+
   getDeliveryType(item) {
     return this.addressService.getDeliveryType(item);  
   }
-
-
 
 }
