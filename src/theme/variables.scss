@@ -3,6 +3,12 @@
 
 // Font path is used to include ionicons,
 // roboto, and noto sans fonts
+$font-path: "../assets/fonts";
+@import "../assets/fonts/iran-fonts/index.css";
+@import "../assets/fonts/adobearabic/index.css";
+@import "../assets/fonts/font-awesome/css/font-awesome.css";
+@import "../assets/fonts/mat-icon-font/material-icons.css";
+
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
