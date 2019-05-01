@@ -6,10 +6,10 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 @Injectable()
 export class HttpService {
   public static PRODUCT_IMAGE_PATH = 'images/product-image';
-  // public static Host = 'http://bankofstyle.com';
-  // serverAddress: string = 'http://bankofstyle.com/api/';
-  public static Host = 'http://localhost:3000';
-  serverAddress: string = 'http://localhost:3000/api/';
+  public static Host = 'https://lithium.style';
+  serverAddress: string = 'https://lithium.style/api/';
+  // public static Host = 'http://localhost:3000';
+  // serverAddress: string = 'http://localhost:3000/api/';
 
   userToken = null;
 
