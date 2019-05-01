@@ -14,7 +14,7 @@ export class AddressService {
 
       if (delivery[direction].customer) {
 
-        const customer_lable = `${direction}_customer`
+        const customer_lable = `${direction}_customer`;
 
         if (delivery[direction].customer._id && delivery[customer_lable]) {
           return delivery[customer_lable].find(x => x._id === delivery[direction].customer.address._id);
@@ -34,6 +34,16 @@ export class AddressService {
     }
   }
 
+
+
+  getTimeSlot(item) {
+    try {
+      return item.orders[0].delivery_info;
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+  }
   
   getDeliveryType(delivery) {
     try {

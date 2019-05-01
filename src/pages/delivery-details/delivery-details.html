@@ -28,7 +28,13 @@
         <span >{{getDeliveryType()}}</span>
       </ion-label>
     </ion-item>
-    
+    <ion-item>
+      <!--<ion-label class="title">{{getTimeSlot(del).time_slot.lower_bound}} تا {{getTimeSlot(del).time_slot.upper_bound}} :بازه زمانی انتخاب شده توسط کاربر جهت تحویل بسته </ion-label>-->
+      <ion-label class="title">بازه زمانی انتخاب شده توسط کاربر جهت تحویل بسته:</ion-label>
+      <ion-label class="item-value content">
+        <span>{{getTimeSlot().time_slot.lower_bound}} تا {{getTimeSlot().time_slot.upper_bound}} </span>
+      </ion-label>
+    </ion-item>
     <ion-item>
       <ion-label class="title">پیش بینی شروع ارسال</ion-label>
       <ion-label class="item-value content">{{getStartDateTime()}}</ion-label>

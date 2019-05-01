@@ -71,8 +71,6 @@ export class OnDeliveryPage implements OnInit {
     return '-';
   }
 
-
-
   getName(item, isReceiver = false) {
     try {
       return this.addressService.getName(item, isReceiver)
@@ -81,9 +79,7 @@ export class OnDeliveryPage implements OnInit {
       console.log('-> ', err);
     }
     return '-';
-
   }
- 
 
   getStartDate(item) {
     try {
@@ -121,6 +117,15 @@ export class OnDeliveryPage implements OnInit {
 
   }
 
+  getTimeSlot(item) {
+    try {
+      return this.addressService.getTimeSlot(item);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
+  }
+
   getDeliveryType(item) {
     return this.addressService.getDeliveryType(item);  
   }
@@ -136,7 +141,6 @@ export class OnDeliveryPage implements OnInit {
   selectDelivery(item) {
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
-
     });
   }
 

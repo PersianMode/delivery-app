@@ -73,7 +73,15 @@ export class HistoryPage implements OnInit {
       console.log('-> ', err);
     }
     return '-';
+  }
 
+  getTimeSlot(item) {
+    try {
+      return this.addressService.getTimeSlot(item);
+    } catch (err) {
+      console.log('-> ', err);
+    }
+    return '-';
   }
 
   showOrderLineDetails(item) {
@@ -83,7 +91,6 @@ export class HistoryPage implements OnInit {
   }
 
   selectDelivery(item) {
-
     this.navCtrl.push(DeliveryDetailsPage, {
       delivery: item,
       is_delivered: false,

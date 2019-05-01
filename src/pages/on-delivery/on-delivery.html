@@ -30,9 +30,12 @@
           <div style="margin-top: 10px">
             <h3>نوع انتقال: {{getDeliveryType(del)}}</h3>
           </div>
+          <div *ngIf="del.to.customer">
+            <p>بازه زمانی انتخاب شده توسط کاربر جهت تحویل بسته: {{getTimeSlot(del).time_slot.lower_bound}} تا {{getTimeSlot(del).time_slot.upper_bound}}</p>
+            <!--<p>زمان انتخاب شده توسط کاربر جهت تحویل بسته: {{del.orders[0].delivery_info.time_slot.lower_bound}} تا {{del.orders[0].delivery_info.time_slot.upper_bound}}</p>-->
+          </div>
         </div>
         <button ion-button (click)="showOrderLineDetails(del)" style="margin-top: 20px " outline>نمایش محصولات</button>
-
       </ion-item>
 
       <ion-item-options side="right">
