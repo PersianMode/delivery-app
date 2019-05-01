@@ -29,15 +29,6 @@ import {AddressService} from '../services/address.service';
 @NgModule({
   declarations: [
     MyApp,
-    LoginPage,
-    TabsPage,
-    InternalInboxPage,
-    ExternalInboxPage,
-    HistoryPage,
-    ProfilePage,
-    OnDeliveryPage,
-    OrderDetailsPage,
-    DeliveryDetailsPage,
   ],
   imports: [
     BrowserModule,
